@@ -6,3 +6,7 @@ Features / Task :
 3. LetterHead -> Pending
 4. Account Reflection -> Pending
 5. Trasaction History of Bulk Payment Creation -> Pending
+
+Backup destination:
+Payment request -> erpnext/erpnext/accounts/doctype/payment_request/payment_request.py
+Razorcheckout -> frappe/frappe/templates/pages/integrations/razorpay_checkout.py
