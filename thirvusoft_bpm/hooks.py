@@ -87,9 +87,9 @@ doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/payment_request_list.js"}
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-#	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Payment Gateway Account": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_gateway_account.Autoname"
+}
 
 # Document Events
 # ---------------
