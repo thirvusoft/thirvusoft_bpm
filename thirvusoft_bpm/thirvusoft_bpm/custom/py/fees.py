@@ -19,5 +19,5 @@ def create_payment_request(list_of_docs=None):
                 doc.update(make_payment_request(dt="Fees",dn=fees_doc.name,party_type= "Student",party= fees_doc.student,recipient_id= fees_doc.student_email))
                 if doc.grand_total > 0:
                     doc.save()
-                    doc.submit()
+                    # doc.submit()
     return True
