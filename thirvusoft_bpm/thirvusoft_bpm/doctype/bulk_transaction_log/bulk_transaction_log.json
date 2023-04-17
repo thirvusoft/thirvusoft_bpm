@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:BTL-{####}",
+ "creation": "2023-04-17 17:05:00.841816",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "transaction_status",
+  "bulk_transaction_log_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "bulk_transaction_log_table",
+   "fieldtype": "Table",
+   "label": "Bulk Transaction Log Table",
+   "options": "Bulk Transaction Log Table"
+  },
+  {
+   "fieldname": "transaction_status",
+   "fieldtype": "Select",
+   "label": "Transaction Status",
+   "options": "Pending\nCompleted"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-04-17 17:34:42.256629",
+ "modified_by": "Administrator",
+ "module": "Thirvusoft Bpm",
+ "name": "Bulk Transaction Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
