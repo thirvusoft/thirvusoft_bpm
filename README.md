@@ -2,10 +2,10 @@
 
 Features / Task :  
 1. MultiRazor Pay Settings in Company -> Completed
-2. Bulk Payment Request -> Completed Fixes , yet to deploy in live site
-3. LetterHead -> Pending
-4. Account Reflection -> Pending
-5. Trasaction History of Bulk Payment Creation -> Pending
+2. Bulk Payment Request -> Completed
+3. LetterHead -> Completed
+4. Account Reflection -> Completed
+5. Trasaction History of Bulk Payment Creation -> Completed
 
 Backup destination -> razorpay_backup:  
 * payment_request.py -> erpnext/erpnext/accounts/doctype/payment_request/payment_request.py  
