@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-04-17 17:03:56.664728",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "fees",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "fees",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Fees",
+   "options": "Fees"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nCompleted"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-04-17 17:05:24.936436",
+ "modified_by": "Administrator",
+ "module": "Thirvusoft Bpm",
+ "name": "Bulk Transaction Log Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
