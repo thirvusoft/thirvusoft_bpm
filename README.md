@@ -7,6 +7,6 @@ Features / Task :
 4. Account Reflection -> Pending
 5. Trasaction History of Bulk Payment Creation -> Pending
 
-Backup destination:
-Payment request -> erpnext/erpnext/accounts/doctype/payment_request/payment_request.py
-Razorcheckout -> frappe/frappe/templates/pages/integrations/razorpay_checkout.py
+Backup destination -> razorpay_backup:  
+* payment_request.py -> erpnext/erpnext/accounts/doctype/payment_request/payment_request.py  
+* razorpay_checkout.py -> frappe/frappe/templates/pages/integrations/razorpay_checkout.py
