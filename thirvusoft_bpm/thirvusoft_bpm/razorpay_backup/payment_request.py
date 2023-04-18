@@ -486,8 +486,10 @@ def get_amount(ref_doc, payment_account=None):
 	elif dt == "Fees":
 		grand_total = ref_doc.outstanding_amount
 
-	if grand_total > 0:
+	# Start
+	if grand_total > 0 or dt == "Fees":
 		return grand_total
+	# End
 
 	else:
 		frappe.throw(_("Payment Entry is already created"))
@@ -523,19 +525,24 @@ def get_gateway_details(args):
 	if args.order_type == "Shopping Cart":
 		payment_gateway_account = frappe.get_doc("E Commerce Settings").payment_gateway_account
 		return get_payment_gateway_account(payment_gateway_account)
+	#Customisation
+	# Start
 	company = None
 	if args.get('dn'):
 		company = frappe.get_value('Fees',args.get('dn'),'company')
 	gateway_account = get_payment_gateway_account({"is_default": 1},company)
-
+	#End
 	return gateway_account
 
 
 def get_payment_gateway_account(args,company=None):
+	#Customisation
+	# Start
 	if company:
 		args.update({
 			'company':company
 		})
+	#End
 
 	return frappe.db.get_value(
 		"Payment Gateway Account",

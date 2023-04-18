@@ -31,7 +31,7 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"Company" : "thirvusoft_bpm/custom/js/company.js"}
+doctype_js = {"Fees" : "thirvusoft_bpm/custom/js/fees.js"}
 doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/fees_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -99,7 +99,11 @@ doc_events = {
 	"Payment Request": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.get_advance_entries",
 
-	}
+	},
+    "Fees": {
+		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.fees.previous_outstanding_amount",
+
+	},
 }
 
 # Scheduled Tasks

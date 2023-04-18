@@ -18,3 +18,7 @@ def get_advance_entries(doc,event):
         doc.total_advance_payment += entry['debit']
         fees.total_advance_payment += entry['debit']
     fees.save()
+
+    #Non Payment Message
+    if doc.grand_total <= 0 and doc.payment_gateway_account:
+        doc.message = frappe.db.get_value('Payment Gateway Account',doc.payment_gateway_account,'non_payment_message')
