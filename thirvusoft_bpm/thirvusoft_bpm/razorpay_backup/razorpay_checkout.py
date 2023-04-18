@@ -26,6 +26,7 @@ expected_keys = (
 
 def get_context(context):
 	context.no_cache = 1
+	# Start
 	try:
 		doc = frappe.get_doc("Integration Request", frappe.form_dict["token"])
 		details = json.loads(doc.data)
@@ -38,7 +39,7 @@ def get_context(context):
 			context.api_key = get_api_key(company)
 	except:
 		context.api_key = get_api_key()
-
+	# End
 	try:
 		doc = frappe.get_doc("Integration Request", frappe.form_dict["token"])
 		payment_details = json.loads(doc.data)
@@ -65,11 +66,12 @@ def get_context(context):
 
 
 def get_api_key(company=None):
+	# Start
 	if company:
 		api_key = frappe.db.get_value("Company", company, "api_key")
 	else:
 		api_key = frappe.db.get_value("Razorpay Settings", None, "api_key")
-
+	# End
 	if cint(frappe.form_dict.get("use_sandbox")):
 		api_key = frappe.conf.sandbox_api_key
 
