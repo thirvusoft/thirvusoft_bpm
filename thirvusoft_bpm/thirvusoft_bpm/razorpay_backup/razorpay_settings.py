@@ -217,6 +217,7 @@ class RazorpaySettings(Document):
 			"receipt": kwargs.get("receipt"),
 			"payment_capture": kwargs.get("payment_capture"),
 		}
+		# Customisation
 		data = json.loads(integration_request.data)
 		try:
 			if(data['reference_doctype']=="Payment Request"):
@@ -228,6 +229,7 @@ class RazorpaySettings(Document):
 				company_doc = frappe.get_doc('Company',company)
 		except:
 			pass
+		# Customisation
 
 		if company_doc:
 			try:
@@ -478,7 +480,6 @@ def order_payment_success(integration_request, params):
 	integration.reload()
 
 	data = json.loads(integration.data)
-	
 	controller = frappe.get_doc("Razorpay Settings")
 
 	# Update payment and integration data for payment controller object
