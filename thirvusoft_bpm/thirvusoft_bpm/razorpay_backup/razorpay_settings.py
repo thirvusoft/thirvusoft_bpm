@@ -218,6 +218,7 @@ class RazorpaySettings(Document):
 			"payment_capture": kwargs.get("payment_capture"),
 		}
 		# Customisation
+
 		data = json.loads(integration_request.data)
 		try:
 			if(data['reference_doctype']=="Payment Request"):
@@ -229,15 +230,16 @@ class RazorpaySettings(Document):
 				company_doc = frappe.get_doc('Company',company)
 		except:
 			pass
-		# Customisation
 
 		if company_doc:
+			
 			try:
 				order = make_post_request(
 					"https://api.razorpay.com/v1/orders",
 					auth=(company_doc.api_key, company_doc.get_password(fieldname="api_secret", raise_exception=False)),
 					data=payment_options,
 				)
+				# Customisation
 				order["integration_request"] = integration_request.name
 				return order  # Order returned to be consumed by razorpay.js
 			except Exception:
@@ -272,6 +274,7 @@ class RazorpaySettings(Document):
 		"""
 		data = json.loads(self.integration_request.data)
 		settings = self.get_settings(data)
+		# Customisation
 		try:
 			if(data['reference_doctype']=="Payment Request"):
 				pay_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_doctype')
@@ -282,6 +285,7 @@ class RazorpaySettings(Document):
 				settings = self.get_settings(company)
 		except:
 			settings = self.get_settings(data)
+		# Customisation
 
 		try:
 			resp = make_get_request(
@@ -410,6 +414,7 @@ def capture_payment(is_sandbox=False, sanbox_response=None):
 				resp = sanbox_response
 			else:
 				data = json.loads(doc.data)
+				# Customisation
 				try:
 					if(data['reference_doctype']=="Payment Request"):
 						pay_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_doctype')
@@ -420,6 +425,7 @@ def capture_payment(is_sandbox=False, sanbox_response=None):
 						settings = controller.get_settings(company)
 				except:
 					settings = controller.get_settings(data)
+				# Customisation
 
 				resp = make_get_request(
 					"https://api.razorpay.com/v1/payments/{0}".format(data.get("razorpay_payment_id")),
@@ -555,7 +561,18 @@ def validate_payment_callback(data):
 
 	controller = frappe.get_doc("Razorpay Settings")
 
-	settings = controller.get_settings(data)
+	# Customisation
+	try:
+		if(data['reference_doctype']=="Payment Request"):
+			pay_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_doctype')
+			if pay_doc == "Fees":
+				fee_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_name')
+				company = frappe.db.get_value('Fees',fee_doc,'company')
+		if company:
+			settings = controller.get_settings(company)
+	except:
+		settings = controller.get_settings(data)
+	# Customisation
 
 	resp = make_get_request(
 		"https://api.razorpay.com/v1/subscriptions/{0}".format(subscription_id),

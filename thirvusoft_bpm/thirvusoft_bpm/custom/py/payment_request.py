@@ -31,7 +31,7 @@ def get_advance_entries(doc,event):
 def timesheet_whatsapp(doc,event):
     html = PaymentRequest.get_message(doc)
     v=(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html ).split("<br>")).split(' ') ))
-    v = v.replace('click here to pay', f'click here to pay:  https://erp.nrgimpex.com/app/print-format/Sales%20Invoice ')
+    v = v.replace('click here to pay', f'click here to pay: {doc.payment_url}')
     encoded_s = quote(v)
 
     guardians=frappe.db.sql(""" select phone_number from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
