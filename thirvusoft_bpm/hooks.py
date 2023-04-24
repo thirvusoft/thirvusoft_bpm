@@ -98,6 +98,7 @@ override_doctype_class = {
 doc_events = {
 	"Payment Request": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.get_advance_entries",
+		"on_submit":"thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.timesheet_whatsapp"
 
 	},
     "Fees": {
