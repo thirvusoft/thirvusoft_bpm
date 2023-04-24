@@ -17,7 +17,7 @@
    "description": null,
    "docstatus": 0,
    "dt": "Student Guardian",
-   "fetch_from": null,
+   "fetch_from": "guardian.mobile_number",
    "fetch_if_empty": 0,
    "fieldname": "phone_number",
    "fieldtype": "Data",
