@@ -105,6 +105,10 @@ doc_events = {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.fees.previous_outstanding_amount",
 
 	},
+    "Student": {
+		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.student.validate_wapp_enable",
+
+	},
 }
 
 # Scheduled Tasks
