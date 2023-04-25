@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-04-24 16:36:10.156147",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enable",
+  "instance_id",
+  "access_token"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enable",
+   "fieldtype": "Check",
+   "label": "Enable"
+  },
+  {
+   "depends_on": "eval:doc.enable",
+   "fieldname": "instance_id",
+   "fieldtype": "Data",
+   "label": "Instance ID",
+   "mandatory_depends_on": "eval:doc.enable"
+  },
+  {
+   "depends_on": "eval:doc.enable",
+   "fieldname": "access_token",
+   "fieldtype": "Data",
+   "label": "Access Token",
+   "mandatory_depends_on": "eval:doc.enable"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-04-24 16:36:10.156147",
+ "modified_by": "Administrator",
+ "module": "Thirvusoft Bpm",
+ "name": "Whatsapp Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

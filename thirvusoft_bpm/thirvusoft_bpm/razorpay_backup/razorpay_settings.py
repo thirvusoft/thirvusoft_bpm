@@ -273,19 +273,19 @@ class RazorpaySettings(Document):
 		until it is explicitly captured by merchant.
 		"""
 		data = json.loads(self.integration_request.data)
-		settings = self.get_settings(data)
 		# Customisation
 		try:
 			if(data['reference_doctype']=="Payment Request"):
 				pay_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_doctype')
 				if pay_doc == "Fees":
 					fee_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_name')
-					company = frappe.db.get_value('Fees',fee_doc,'company')
+					company = frappe.get_doc('Company',frappe.db.get_value('Fees',fee_doc,'company'))
 			if company:
-				settings = self.get_settings(company)
+				settings = self.get_settings(data,company)
 		except:
 			settings = self.get_settings(data)
 		# Customisation
+
 
 		try:
 			resp = make_get_request(
@@ -350,13 +350,21 @@ class RazorpaySettings(Document):
 
 		return {"redirect_to": redirect_url, "status": status}
 
-	def get_settings(self, data):
-		settings = frappe._dict(
-			{
-				"api_key": self.api_key,
-				"api_secret": self.get_password(fieldname="api_secret", raise_exception=False),
-			}
-		)
+	def get_settings(self,data,company=None):
+		if company:
+			settings = frappe._dict(
+				{
+					"api_key": company.api_key,
+					"api_secret": company.get_password(fieldname="api_secret", raise_exception=False),
+				}
+			)
+		else:
+			settings = frappe._dict(
+				{
+					"api_key": self.api_key,
+					"api_secret": self.get_password(fieldname="api_secret", raise_exception=False),
+				}
+			)
 
 		if cint(data.get("notes", {}).get("use_sandbox")) or data.get("use_sandbox"):
 			settings.update(
@@ -420,9 +428,9 @@ def capture_payment(is_sandbox=False, sanbox_response=None):
 						pay_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_doctype')
 						if pay_doc == "Fees":
 							fee_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_name')
-							company = frappe.db.get_value('Fees',fee_doc,'company')
+							company = frappe.get_doc('Company',frappe.db.get_value('Fees',fee_doc,'company'))
 					if company:
-						settings = controller.get_settings(company)
+						settings = controller.get_settings(data,company)
 				except:
 					settings = controller.get_settings(data)
 				# Customisation
@@ -567,9 +575,9 @@ def validate_payment_callback(data):
 			pay_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_doctype')
 			if pay_doc == "Fees":
 				fee_doc = frappe.db.get_value('Payment Request',data['reference_docname'],'reference_name')
-				company = frappe.db.get_value('Fees',fee_doc,'company')
+				company = frappe.get_doc('Company',frappe.db.get_value('Fees',fee_doc,'company'))
 		if company:
-			settings = controller.get_settings(company)
+			settings = controller.get_settings(data,company)
 	except:
 		settings = controller.get_settings(data)
 	# Customisation
