@@ -88,7 +88,8 @@ doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/fees_list.js"}
 # Override standard doctype classes
 
 override_doctype_class = {
-	"Payment Gateway Account": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_gateway_account.Autoname"
+	"Payment Gateway Account": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_gateway_account.Autoname",
+    "Program Enrollment Tool": "thirvusoft_bpm.thirvusoft_bpm.custom.py.program_enrollment.CustomEnrollment"
 }
 
 # Document Events
@@ -98,7 +99,7 @@ override_doctype_class = {
 doc_events = {
 	"Payment Request": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.get_advance_entries",
-		"on_submit":"thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.timesheet_whatsapp"
+		"on_submit":"thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.whatsapp_message"
 
 	},
     "Fees": {
