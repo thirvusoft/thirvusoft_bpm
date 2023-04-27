@@ -5,6 +5,8 @@ import re
 from urllib.parse import quote
 from frappe.core.doctype.communication.email import get_attach_link
 import requests
+from frappe.utils.file_manager import save_file
+from frappe.utils.pdf import get_pdf
 
 @frappe.whitelist()
 def send_message_confirmation(doc,event):
@@ -28,12 +30,14 @@ def send_message_confirmation(doc,event):
                     "value",
                 )
             for i in guardians:
-                link = get_attach_link(ref,default_print_format)
-                soup = BeautifulSoup(link, 'html.parser')               
-                urls = [link.get('href') for link in soup.find_all('a')]
+                pdf_bytes = frappe.get_print(doc.doctype, doc.name, doc=doc, print_format=default_print_format)
+                pdf_name = doc.name + '.pdf'
+                pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
+                urls = [f'{frappe.utils.get_url()}{pdf_url.file_url}']
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
                     url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls[0]}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     response = requests.request("POST", url, headers=headers, data=payload)
+                   
