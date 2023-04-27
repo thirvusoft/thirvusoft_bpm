@@ -33,11 +33,11 @@ def send_message_confirmation(doc,event):
                 pdf_bytes = frappe.get_print(doc.doctype, doc.name, doc=doc, print_format=default_print_format)
                 pdf_name = doc.name + '.pdf'
                 pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
-                urls = [f'{frappe.utils.get_url()}{pdf_url.file_url}']
+                urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
-                    url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls[0]}&instance_id={instance_id}&access_token={access_token}'
+                    url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     response = requests.request("POST", url, headers=headers, data=payload)
-                   
+                    frappe.delete_doc('File',pdf_url.name)
