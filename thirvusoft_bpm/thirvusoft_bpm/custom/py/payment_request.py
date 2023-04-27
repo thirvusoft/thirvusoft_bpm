@@ -48,18 +48,14 @@ def whatsapp_message(doc,event):
         guardians=frappe.db.sql(""" select phone_number from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
         instance_id =  frappe.db.get_single_value('Whatsapp Settings','instance_id')
         access_token =  frappe.db.get_single_value('Whatsapp Settings','access_token')
-        default_print_format = frappe.db.get_value(
-                    "Property Setter",
-                    dict(property="default_print_format", doc_type=doc.doctype),
-                    "value",
-                )
+
         for i in guardians:
-            pdf_bytes = frappe.get_print(doc.doctype, doc.name, doc=doc, print_format=default_print_format)
+            fees_doc  = frappe.get_doc('Fees',doc.reference_name)
+            pdf_bytes = frappe.get_print(doc.reference_doctype, doc.reference_name, doc=fees_doc, print_format=doc.print_format)
             pdf_name = doc.name + '.pdf'
             pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
             urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
-
-            if urls and i["phone_number"]:
+            if urls:
                 mobile_number = i["phone_number"].replace("+", "")
                 url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls}&instance_id={instance_id}&access_token={access_token}'
                 payload={}
