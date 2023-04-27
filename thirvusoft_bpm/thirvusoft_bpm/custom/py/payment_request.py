@@ -6,6 +6,8 @@ from urllib.parse import quote
 from erpnext.accounts.doctype.payment_request.payment_request import PaymentRequest
 from frappe.core.doctype.communication.email import get_attach_link
 def get_advance_entries(doc,event):
+    if doc.party_type == "Student" and doc.party and frappe.db.get_value('Student',doc.party,'virtual_account'):
+        doc.virtual_account  = frappe.db.get_value('Student',doc.party,'virtual_account')
     fees = frappe.get_doc('Fees',doc.reference_name)
     gl_entry = frappe.get_all('GL Entry',{'debit':['>',0],'is_cancelled':0,'credit':0,'party_type':doc.party_type,'party':doc.party,'against_voucher':doc.reference_name,'voucher_no':['!=',doc.reference_name]},['account','debit'])
     doc.advance_payments = []
