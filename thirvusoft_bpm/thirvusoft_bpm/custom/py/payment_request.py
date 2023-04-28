@@ -35,32 +35,46 @@ def get_advance_entries(doc,event):
 
         #1.5 discount percentage
         if doc.grand_total > 0 and frappe.db.get_value('Company',fees.company,'charges_applicable'):
+            doc.without_charges = doc.grand_total
             doc.grand_total =  (doc.grand_total * (frappe.db.get_value('Company',fees.company,'razorpay_charges')/100)) + doc.grand_total
+        elif doc.grand_total > 0 and not frappe.db.get_value('Company',fees.company,'charges_applicable'):
+            doc.grand_total =  doc.without_charges
         #Non Payment Message
         if doc.grand_total <= 0 and doc.payment_gateway_account:
             doc.message = frappe.db.get_value('Payment Gateway Account',doc.payment_gateway_account,'non_payment_message')
 
 def whatsapp_message(doc,event):
-    if frappe.db.get_single_value('Whatsapp Settings','enable') == 1:
+    if frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and doc.reference_doctype == 'Fees' and doc.reference_name:
         html = PaymentRequest.get_message(doc)
         v=(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html ).split("<br>")).split(' ') ))
         v = v.replace('click here to pay', f'click here to pay: {doc.payment_url}')
         encoded_s = quote(v)
 
-        guardians=frappe.db.sql(""" select phone_number from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
+        guardians=frappe.db.sql(""" select phone_number,guardian from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
         instance_id =  frappe.db.get_single_value('Whatsapp Settings','instance_id')
         access_token =  frappe.db.get_single_value('Whatsapp Settings','access_token')
+        company = frappe.get_value('Fees',doc.reference_name,'company')
 
         for i in guardians:
+            def_message  = frappe.db.get_value('Payment Gateway Account',{'company':company,'is_default':1},'default_header_for_whatsapp_mail_message')
+            def_context = {
+                'doc':frappe.get_doc('Student',doc.party),
+                'guardian':i['guardian']
+            }
+                
+            html2 = frappe.render_template(def_message, def_context)
+            def_v =(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html2 ).split("<br>")).split(' ') ))
+
+
             fees_doc  = frappe.get_doc('Fees',doc.reference_name)
             pdf_bytes = frappe.get_print(doc.reference_doctype, doc.reference_name, doc=fees_doc, print_format=doc.print_format)
             pdf_name = doc.reference_name + '.pdf'
             pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
             urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
-            if urls:
+            if urls and i["phone_number"]:
                 mobile_number = i["phone_number"].replace("+", "")
-                url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                 payload={}
                 headers = {}
                 response = requests.request("POST", url, headers=headers, data=payload)
-                frappe.delete_doc('File',pdf_url.name)
+                # frappe.delete_doc('File',pdf_url.name)

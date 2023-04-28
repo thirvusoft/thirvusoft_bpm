@@ -20,7 +20,7 @@ $(document).ready(function(){
 		var rzp = new Razorpay(options);
 
 		frappe.call({
-			'method':"thirvusoft_bpm.thirvusoft_bpm.custom.js.razorpay_checkout.check_expiry_date",
+			'method':"thirvusoft_bpm.thirvusoft_bpm.custom.py.razorpay_checkout.check_expiry_date",
 			'args':{
 				'token':'{{token}}'
 			},
@@ -32,7 +32,7 @@ $(document).ready(function(){
 				else{
 					frappe.throw({
 						title: __("Remainder"),
-						message: __("Your Payment Due Date is over. Kindly contact Institution"),
+						message: __(res.message[0]),
 					});
 				}
 			}
