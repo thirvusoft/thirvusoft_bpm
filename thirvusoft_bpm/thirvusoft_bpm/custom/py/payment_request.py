@@ -20,24 +20,24 @@ def get_advance_entries(doc,event):
         doc.total_advance_payment = 0
         fees.advance_payments = []
         fees.total_advance_payment = 0
-        for entry in gl_entry:
-            doc.append('advance_payments',{
-                'account':entry['account'],
-                'amount':entry['debit']
-            })
-            fees.append('advance_payments',{
-                'account':entry['account'],
-                'amount':entry['debit']
-            })
-            doc.total_advance_payment += entry['debit']
-            fees.total_advance_payment += entry['debit']
-        fees.save()
+        # for entry in gl_entry:
+        #     doc.append('advance_payments',{
+        #         'account':entry['account'],
+        #         'amount':entry['debit']
+        #     })
+        #     fees.append('advance_payments',{
+        #         'account':entry['account'],
+        #         'amount':entry['debit']
+        #     })
+        #     doc.total_advance_payment += entry['debit']
+        #     fees.total_advance_payment += entry['debit']
+        # fees.save()
 
         #1.5 discount percentage
         if doc.grand_total > 0 and frappe.db.get_value('Company',fees.company,'charges_applicable'):
             doc.without_charges = doc.grand_total
             doc.grand_total =  (doc.grand_total * (frappe.db.get_value('Company',fees.company,'razorpay_charges')/100)) + doc.grand_total
-        elif doc.grand_total > 0 and not frappe.db.get_value('Company',fees.company,'charges_applicable'):
+        elif doc.grand_total > 0 and not frappe.db.get_value('Company',fees.company,'charges_applicable') and doc.without_charges:
             doc.grand_total =  doc.without_charges
         #Non Payment Message
         if doc.grand_total <= 0 and doc.payment_gateway_account:
