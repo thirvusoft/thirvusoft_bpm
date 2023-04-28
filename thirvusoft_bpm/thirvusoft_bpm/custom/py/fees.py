@@ -62,12 +62,12 @@ def previous_outstanding_amount(doc,event):
     sum = frappe.get_all('Fees',filters,['sum(outstanding_amount) as sum'])
     doc.previous_outstanding_amount = sum[0].get('sum') if sum else 0
     doc.net_total = doc.grand_total
-    if frappe.db.get_value('Company',doc.company,'enable_annual_discounting'):
-        if doc.receivable_account == frappe.db.get_value('Company',doc.company,'receivable_account_head_') and  doc.income_account == frappe.db.get_value('Company',doc.company,'income_account_head'):
-            doc.grand_total = doc.net_total - (doc.net_total * (frappe.db.get_value('Company',doc.company,'annual_discount'))/100)
-        else:
-            doc.grand_total  = doc.net_total
-    else:
-            doc.grand_total  = doc.net_total
+    # if frappe.db.get_value('Company',doc.company,'enable_annual_discounting'):
+    #     if doc.receivable_account == frappe.db.get_value('Company',doc.company,'receivable_account_head_') and  doc.income_account == frappe.db.get_value('Company',doc.company,'income_account_head'):
+    #         doc.grand_total = doc.net_total - (doc.net_total * (frappe.db.get_value('Company',doc.company,'annual_discount'))/100)
+    #     else:
+    #         doc.grand_total  = doc.net_total
+    # else:
+    #         doc.grand_total  = doc.net_total
             
-    doc.outstanding_amount  = doc.grand_total
+    # doc.outstanding_amount  = doc.grand_total
