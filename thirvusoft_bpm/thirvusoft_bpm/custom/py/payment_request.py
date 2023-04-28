@@ -6,6 +6,8 @@ from urllib.parse import quote
 from erpnext.accounts.doctype.payment_request.payment_request import PaymentRequest
 from frappe.core.doctype.communication.email import get_attach_link
 from frappe.utils.pdf import get_pdf
+from frappe.utils.file_manager import save_file
+
 
 def get_advance_entries(doc,event):
     if doc.party_type == "Student" and doc.party and frappe.db.get_value('Student',doc.party,'virtual_account'):
@@ -52,12 +54,13 @@ def whatsapp_message(doc,event):
         for i in guardians:
             fees_doc  = frappe.get_doc('Fees',doc.reference_name)
             pdf_bytes = frappe.get_print(doc.reference_doctype, doc.reference_name, doc=fees_doc, print_format=doc.print_format)
-            pdf_name = doc.name + '.pdf'
+            pdf_name = doc.reference_name + '.pdf'
             pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
             urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
             if urls:
                 mobile_number = i["phone_number"].replace("+", "")
-                url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls}&instance_id={instance_id}&access_token={access_token}'
+                url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                 payload={}
                 headers = {}
                 response = requests.request("POST", url, headers=headers, data=payload)
+                frappe.delete_doc('File',pdf_url.name)

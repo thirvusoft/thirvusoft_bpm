@@ -20,6 +20,7 @@ class CustomEnrollment(ProgramEnrollmentTool):
 				prog_enrollment.academic_year = self.new_academic_year
 				prog_enrollment.academic_term = self.new_academic_term
 				# Customisation
+				prog_enrollment.mode_of_transportation = frappe.db.get_value('Program Enrollment',{'student':stud.student,'student_name':stud.student_name,'academic_year':self.academic_year,'program':self.program,'docstatus':['!=',2]},'mode_of_transportation')
 				prog_enrollment.trip_distance = frappe.db.get_value('Program Enrollment',{'student':stud.student,'student_name':stud.student_name,'academic_year':self.academic_year,'program':self.program,'docstatus':['!=',2]},'trip_distance')
 				prog_enrollment.trip_band =  frappe.db.get_value('Program Enrollment',{'student':stud.student,'student_name':stud.student_name,'academic_year':self.academic_year,'program':self.program,'docstatus':['!=',2]},'trip_band')
 				prog_enrollment.pickup_location= frappe.db.get_value('Program Enrollment',{'student':stud.student,'student_name':stud.student_name,'academic_year':self.academic_year,'program':self.program,'docstatus':['!=',2]},'pickup_location')

@@ -7,6 +7,7 @@ from frappe.core.doctype.communication.email import get_attach_link
 import requests
 from frappe.utils.file_manager import save_file
 from frappe.utils.pdf import get_pdf
+from frappe.utils.background_jobs import enqueue
 
 @frappe.whitelist()
 def send_message_confirmation(doc,event):
@@ -36,8 +37,28 @@ def send_message_confirmation(doc,event):
                 urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
-                    url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls}&instance_id={instance_id}&access_token={access_token}'
+                    url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     response = requests.request("POST", url, headers=headers, data=payload)
                     frappe.delete_doc('File',pdf_url.name)
+
+
+            fees_doc = frappe.get_doc('Fees',ref.reference_name)
+            """send email with payment link"""
+            email_args = {
+                "recipients": fees_doc.student_email,
+                "sender": None,
+                "subject": f'Payment Entry for {doc.name}',
+                "message": encoded_s,
+                "now": True,
+                "attachments": [
+                    frappe.attach_print(
+                        doc.doctype,
+                        doc.name,
+                        file_name=doc.name,
+                        print_format=default_print_format,
+                    )
+                ],
+            }
+            enqueue(method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args)
