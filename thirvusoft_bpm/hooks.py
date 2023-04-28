@@ -113,7 +113,7 @@ doc_events = {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.student.validate_wapp_enable",
 	},
     "Payment Entry": {
-		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
+		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
 	},
     "Integration Request": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.integration_request.update_expiry_date",
