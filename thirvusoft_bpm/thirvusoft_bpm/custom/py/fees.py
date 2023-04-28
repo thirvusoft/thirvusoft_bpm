@@ -40,20 +40,20 @@ def create_payment_request(list_of_docs=None):
                 
     return True
 
-@frappe.whitelist()
-def update_advance_payments(name):
-    fees = frappe.get_doc('Fees',name)
-    gl_entry = frappe.get_all('GL Entry',{'debit':['>',0],'is_cancelled':0,'credit':0,'party_type':'Student','party':fees.student,'against_voucher':name,'voucher_no':['!=',name]},['account','debit'])
-    fees.advance_payments = []
-    fees.total_advance_payment = 0
-    for entry in gl_entry:
-        fees.append('advance_payments',{
-            'account':entry['account'],
-            'amount':entry['debit']
-        })
-        fees.total_advance_payment += entry['debit']
-    fees.save()
-    return True
+# @frappe.whitelist()
+# def update_advance_payments(name):
+#     fees = frappe.get_doc('Fees',name)
+#     gl_entry = frappe.get_all('GL Entry',{'debit':['>',0],'is_cancelled':0,'credit':0,'party_type':'Student','party':fees.student,'against_voucher':name,'voucher_no':['!=',name]},['account','debit'])
+#     fees.advance_payments = []
+#     fees.total_advance_payment = 0
+#     for entry in gl_entry:
+#         fees.append('advance_payments',{
+#             'account':entry['account'],
+#             'amount':entry['debit']
+#         })
+#         fees.total_advance_payment += entry['debit']
+#     fees.save()
+#     return True
 
 def previous_outstanding_amount(doc,event):
     filters = {'student':doc.student,'outstanding_amount':['!=',0]}
