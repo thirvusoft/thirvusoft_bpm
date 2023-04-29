@@ -50,7 +50,7 @@ def whatsapp_message(doc,event):
         v = v.replace('click here to pay', f'click here to pay: {doc.payment_url}')
         encoded_s = quote(v)
 
-        guardians=frappe.db.sql(""" select phone_number,guardian from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
+        guardians=frappe.db.sql(""" select phone_number,guardian_name from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
         instance_id =  frappe.db.get_single_value('Whatsapp Settings','instance_id')
         access_token =  frappe.db.get_single_value('Whatsapp Settings','access_token')
         company = frappe.get_value('Fees',doc.reference_name,'company')
@@ -59,7 +59,7 @@ def whatsapp_message(doc,event):
             def_message  = frappe.db.get_value('Payment Gateway Account',{'company':company,'is_default':1},'default_header_for_whatsapp_mail_message')
             def_context = {
                 'doc':frappe.get_doc('Student',doc.party),
-                'guardian':i['guardian']
+                'guardian':i['guardian_name']
             }
                 
             html2 = frappe.render_template(def_message, def_context)

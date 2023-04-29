@@ -27,7 +27,7 @@ def send_message_confirmation(doc,event):
                 v=(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html ).split("<br>")).split(' ') ))
                 encoded_s = quote(v)
 
-            guardians=frappe.db.sql(""" select phone_number,guardian from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
+            guardians=frappe.db.sql(""" select phone_number,guardian_name from `tabStudent Guardian` md where enable_whatsapp_message = 1 and parent='{0}'""".format(doc.party),as_dict=1)
             instance_id =  frappe.db.get_single_value('Whatsapp Settings','instance_id')
             access_token =  frappe.db.get_single_value('Whatsapp Settings','access_token')
             default_print_format = frappe.db.get_value(
@@ -40,7 +40,7 @@ def send_message_confirmation(doc,event):
                 if def_message:
                     def_context = {
                         'doc':frappe.get_doc('Student',fees_doc.student),
-                        'guardian':i['guardian']
+                        'guardian':i['guardian_name']
                     }
                         
                     html2 = frappe.render_template(def_message, def_context)
