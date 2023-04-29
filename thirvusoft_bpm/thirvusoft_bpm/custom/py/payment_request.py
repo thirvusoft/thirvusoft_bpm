@@ -20,18 +20,18 @@ def get_advance_entries(doc,event):
         doc.total_advance_payment = 0
         fees.advance_payments = []
         fees.total_advance_payment = 0
-        # for entry in gl_entry:
-        #     doc.append('advance_payments',{
-        #         'account':entry['account'],
-        #         'amount':entry['debit']
-        #     })
-        #     fees.append('advance_payments',{
-        #         'account':entry['account'],
-        #         'amount':entry['debit']
-        #     })
-        #     doc.total_advance_payment += entry['debit']
-        #     fees.total_advance_payment += entry['debit']
-        # fees.save()
+        for entry in gl_entry:
+            doc.append('advance_payments',{
+                'account':entry['account'],
+                'amount':entry['debit']
+            })
+            fees.append('advance_payments',{
+                'account':entry['account'],
+                'amount':entry['debit']
+            })
+            doc.total_advance_payment += entry['debit']
+            fees.total_advance_payment += entry['debit']
+        fees.save()
 
         #1.5 discount percentage
         # if doc.grand_total > 0 and frappe.db.get_value('Company',fees.company,'charges_applicable'):
@@ -73,8 +73,9 @@ def whatsapp_message(doc,event):
             urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
             if urls and i["phone_number"]:
                 mobile_number = i["phone_number"].replace("+", "")
-                url = f'https://app.botsender.in/api/send.php?number={mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                url = f'https://app.botsender.in/api/send.php?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                 payload={}
                 headers = {}
                 response = requests.request("POST", url, headers=headers, data=payload)
-                # frappe.delete_doc('File',pdf_url.name)
+                # frappe.errprint(response.__dict__)
+                frappe.delete_doc('File',pdf_url.name)

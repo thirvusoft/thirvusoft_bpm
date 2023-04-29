@@ -106,9 +106,9 @@ doc_events = {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.fees.previous_outstanding_amount",
 
 	},
-#     "Journal Entry": {
-# 		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.journal_entry.update_fees",
-# 	},
+    "Journal Entry": {
+		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.journal_entry.update_fees",
+	},
     "Student": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.student.validate_wapp_enable",
 	},
