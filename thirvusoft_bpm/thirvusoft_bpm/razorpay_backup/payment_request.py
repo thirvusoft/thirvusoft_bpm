@@ -276,7 +276,7 @@ class PaymentRequest(Document):
 
 		if submit:
 			payment_entry.insert(ignore_permissions=True)
-			payment_entry.submit()
+			# payment_entry.submit()
 
 		return payment_entry
 

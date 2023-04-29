@@ -7,5 +7,6 @@ def update_fees(doc,event):
                     'account':acc.account,
                     'amount':acc.debit_in_account_currency
                 })
+            fees.total_advance_payment += acc.debit_in_account_currency
             fees.save()
 
