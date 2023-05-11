@@ -33,7 +33,12 @@ def create_payment_request(list_of_docs=None):
                 doc.mode_of_payment = 'Gateway'
                 doc.payment_request_type = 'Inward'
                 # if doc.grand_total > 0:
-                doc.grand_total += fees_doc.previous_outstanding_amount
+                filters = {'student':fees_doc.student,'outstanding_amount':['!=',0]}
+                if fees_doc.name:
+                    filters.update({'name':['!=',fees_doc.name]})
+                sum = frappe.get_all('Fees',filters,['sum(outstanding_amount) as sum'])
+                previous_outstanding_amount = sum[0].get('sum') if sum else 0
+                doc.grand_total += previous_outstanding_amount
                 doc.save()
                 frappe.db.set_value('Bulk Transaction Log Table',{'parent':update_dict[fees],'parentfield': "bulk_transaction_log_table",'fees':fees},'status','Completed')
                 name = frappe.get_doc('Bulk Transaction Log',new_transaction.name)
