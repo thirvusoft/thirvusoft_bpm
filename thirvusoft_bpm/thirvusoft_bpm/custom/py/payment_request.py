@@ -13,8 +13,6 @@ def get_advance_entries(doc,event):
     check = 0
     # if doc.party_type == "Student" and doc.party and frappe.db.get_value('Student',doc.party,'virtual_account'):
     #     doc.virtual_account  = frappe.db.get_value('Student',doc.party,'virtual_account')
-    if event == "after_insert":
-        check = 1
     if doc.reference_doctype == 'Fees' and doc.reference_name:
         fees = frappe.get_doc('Fees',doc.reference_name)
         gl_entry = frappe.get_all('GL Entry',{'debit':['>',0],'is_cancelled':0,'credit':0,'party_type':doc.party_type,'party':doc.party,'against_voucher':doc.reference_name,'voucher_no':['!=',doc.reference_name]},['account','debit'])
@@ -36,12 +34,12 @@ def get_advance_entries(doc,event):
         fees.save()
 
         #1.5 discount percentage
-        if check:
-            if doc.grand_total > 0 and frappe.db.get_value('Company',fees.company,'charges_applicable'):
-                doc.without_charges = doc.grand_total
-                doc.grand_total =  ( doc.without_charges * (frappe.db.get_value('Company',fees.company,'razorpay_charges')/100)) + doc.without_charges
-            # elif doc.grand_total > 0 and not frappe.db.get_value('Company',fees.company,'charges_applicable') and doc.without_charges:
-            #     doc.grand_total =  doc.without_charges
+    
+        if doc.grand_total > 0 and frappe.db.get_value('Company',fees.company,'charges_applicable') and doc.without_charges:
+            doc.without_charges = doc.grand_total
+            doc.grand_total =  ( doc.without_charges * (frappe.db.get_value('Company',fees.company,'razorpay_charges')/100)) + doc.without_charges
+        # elif doc.grand_total > 0 and not frappe.db.get_value('Company',fees.company,'charges_applicable') and doc.without_charges:
+        #     doc.grand_total =  doc.without_charges
         #Non Payment Message
         if doc.grand_total <= 0 and doc.payment_gateway_account:
             doc.message = frappe.db.get_value('Payment Gateway Account',doc.payment_gateway_account,'non_payment_message')
