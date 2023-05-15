@@ -12,7 +12,7 @@ from frappe.utils.background_jobs import enqueue
 @frappe.whitelist()
 def send_message_confirmation(doc,event):
     for ref in doc.references:
-        if ref.reference_doctype == 'Fees' and ref.reference_name and frappe.db.get_single_value('Whatsapp Settings','enable') == 1:
+        if ref.reference_doctype == 'Fees' and ref.reference_name and frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and frappe.db.get_value('Company',doc.company,'enable_payment_confirmation_message') ==1:
             def_v = ''
             encoded_s = ''
             fees_doc = frappe.get_doc('Fees',ref.reference_name)
