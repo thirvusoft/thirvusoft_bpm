@@ -99,7 +99,6 @@ override_doctype_class = {
 doc_events = {
 	"Payment Request": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.get_advance_entries",
-		"after_insert": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.get_advance_entries",
 		"on_submit":"thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_request.whatsapp_message"
 
 	},
@@ -110,12 +109,13 @@ doc_events = {
     "Journal Entry": {
 		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.journal_entry.update_fees",
 	},
+    # "Payment Entry": {
+	# 	"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
+	# },
     # "Student": {
 	# 	"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.student.validate_wapp_enable",
 	# },
-    "Payment Entry": {
-		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
-	},
+
     "Integration Request": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.integration_request.update_expiry_date",
 

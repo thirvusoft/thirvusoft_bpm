@@ -10,7 +10,6 @@ from frappe.utils.file_manager import save_file
 
 
 def get_advance_entries(doc,event):
-    check = 0
     # if doc.party_type == "Student" and doc.party and frappe.db.get_value('Student',doc.party,'virtual_account'):
     #     doc.virtual_account  = frappe.db.get_value('Student',doc.party,'virtual_account')
     if doc.reference_doctype == 'Fees' and doc.reference_name:
@@ -34,12 +33,11 @@ def get_advance_entries(doc,event):
         fees.save()
 
         #1.5 discount percentage
-    
-        if doc.grand_total > 0 and frappe.db.get_value('Company',fees.company,'charges_applicable') and doc.without_charges:
+        if doc.grand_total > 0 and frappe.db.get_value('Company',fees.company,'charges_applicable') and not doc.without_charges:
             doc.without_charges = doc.grand_total
             doc.grand_total =  ( doc.without_charges * (frappe.db.get_value('Company',fees.company,'razorpay_charges')/100)) + doc.without_charges
-        # elif doc.grand_total > 0 and not frappe.db.get_value('Company',fees.company,'charges_applicable') and doc.without_charges:
-        #     doc.grand_total =  doc.without_charges
+        elif doc.grand_total > 0 and not frappe.db.get_value('Company',fees.company,'charges_applicable') and doc.without_charges:
+            doc.grand_total =  doc.without_charges
         #Non Payment Message
         if doc.grand_total <= 0 and doc.payment_gateway_account:
             doc.message = frappe.db.get_value('Payment Gateway Account',doc.payment_gateway_account,'non_payment_message')
