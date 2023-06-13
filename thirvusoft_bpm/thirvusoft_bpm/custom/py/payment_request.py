@@ -76,5 +76,5 @@ def whatsapp_message(doc,event):
                 payload={}
                 headers = {}
                 response = requests.request("POST", url, headers=headers, data=payload)
-                frappe.errprint(response.__dict__)
+                # frappe.errprint(response.__dict__)
                 frappe.delete_doc('File',pdf_url.name)
