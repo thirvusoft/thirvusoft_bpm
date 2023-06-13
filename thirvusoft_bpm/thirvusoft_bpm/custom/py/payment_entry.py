@@ -53,7 +53,7 @@ def send_message_confirmation(doc,event):
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
                     frappe.errprint(mobile_number)
-                    url = f'https://app.botsender.in/api/send.php?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                    url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     response = requests.request("POST", url, headers=headers, data=payload)
