@@ -15,6 +15,8 @@ def send_message_confirmation(doc,event):
         if ref.reference_doctype == 'Fees' and ref.reference_name and frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and frappe.db.get_value('Company',doc.company,'enable_payment_confirmation_message') ==1:
             def_v = ''
             encoded_s = ''
+            html = ''
+            html2 = ''
             fees_doc = frappe.get_doc('Fees',ref.reference_name)
 
             message  = frappe.db.get_value('Payment Gateway Account',{'company':doc.company,'is_default':1},'confirmation_message')
@@ -59,13 +61,14 @@ def send_message_confirmation(doc,event):
                     response = requests.request("GET", url, headers=headers, data=payload)
                     frappe.delete_doc('File',pdf_url.name)
 
-
+            final_msg = def_v + encoded_s
+            final_msg.replace('%',' ')
             """send email with payment link"""
             email_args = {
                 "recipients": fees_doc.student_email,
                 "sender": None,
                 "subject": f'Payment Entry for {doc.name}',
-                "message": def_v + encoded_s,
+                "message": html2 + html,
                 "now": True,
                 "attachments": [
                     frappe.attach_print(
