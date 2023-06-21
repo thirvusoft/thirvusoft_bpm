@@ -75,6 +75,7 @@ def whatsapp_message(doc,event):
                 url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                 payload={}
                 headers = {}
-                response = requests.request("POST", url, headers=headers, data=payload)
-                # frappe.errprint(response.__dict__)
+                response = requests.request("GET", url, headers=headers, data=payload)
+                #frappe.printerr(response.__dict__)
+                frappe.log_error(title='error msg', message=response.__dict__)
                 frappe.delete_doc('File',pdf_url.name)
