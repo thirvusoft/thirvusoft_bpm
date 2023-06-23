@@ -108,6 +108,8 @@ doc_events = {
 	},
     "Journal Entry": {
 		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.journal_entry.update_fees",
+		"on_cancel": "thirvusoft_bpm.thirvusoft_bpm.custom.py.journal_entry.update_fees",
+
 	},
     # "Payment Entry": {
 	# 	"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
