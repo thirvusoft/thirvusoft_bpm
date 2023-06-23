@@ -111,12 +111,12 @@ doc_events = {
 		"on_cancel": "thirvusoft_bpm.thirvusoft_bpm.custom.py.journal_entry.update_fees",
 
 	},
-    # "Payment Entry": {
-	# 	"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
-	# },
-    # "Student": {
-	# 	"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.student.validate_wapp_enable",
-	# },
+    "Payment Entry": {
+		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
+	},
+    "Student": {
+	 	"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.student.validate_wapp_enable",
+	},
 
     "Integration Request": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.integration_request.update_expiry_date",
