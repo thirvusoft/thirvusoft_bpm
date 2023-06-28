@@ -1,0 +1,42 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2023-06-27 16:20:21.296824",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "modified": "2023-06-28 09:49:20.567384",
+ "modified_by": "Administrator",
+ "module": "Thirvusoft Bpm",
+ "name": "Accounts Receivable for Fees",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "",
+ "ref_doctype": "Fees",
+ "report_name": "Accounts Receivable for Fees",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Academics User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Custom_Academics Manager"
+  },
+  {
+   "role": "Accounts manager_1"
+  },
+  {
+   "role": "Accounts user_1"
+  }
+ ]
+}
