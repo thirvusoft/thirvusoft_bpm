@@ -9,7 +9,9 @@
  "engine": "InnoDB",
  "field_order": [
   "edu_branch",
+  "pre_admission",
   "series_no",
+  "series",
   "admission"
  ],
  "fields": [
@@ -21,9 +23,15 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:!doc.pre_admission",
+   "description": "(Should be a Integer Value)",
    "fieldname": "series_no",
-   "fieldtype": "Data",
-   "label": "Series No"
+   "fieldtype": "Icon",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Series No",
+   "mandatory_depends_on": "eval:!doc.pre_admission"
   },
   {
    "allow_in_quick_entry": 1,
@@ -38,11 +46,25 @@
    "label": "Admission",
    "set_only_once": 1,
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "pre_admission",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Pre Admission"
+  },
+  {
+   "depends_on": "eval:doc.pre_admission",
+   "fieldname": "series",
+   "fieldtype": "Data",
+   "label": "Series",
+   "mandatory_depends_on": "eval:doc.pre_admission"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-27 15:49:00.887938",
+ "modified": "2023-06-30 12:20:53.447893",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Admission",
