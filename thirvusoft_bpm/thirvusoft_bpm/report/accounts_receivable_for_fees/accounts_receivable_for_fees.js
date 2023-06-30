@@ -18,17 +18,24 @@ frappe.query_reports["Accounts Receivable for Fees"] = {
 			"fieldtype": "Date",
 			"default": frappe.datetime.get_today()
 		},
-		{
-			"fieldname": "cost_center",
-			"label": __("Cost Center"),
-			"fieldtype": "Link",
-			"options": "Cost Center"
-		},
+		
 		{
 			"fieldname": "student",
 			"label": __("Student"),
 			"fieldtype": "Link",
 			"options": "Student",
+		},
+		{
+			"fieldname": "program",
+			"label": __("Program"),
+			"fieldtype": "Link",
+			"options": "Program"
+		},
+		{
+			"fieldname": "student_group",
+			"label": __("Student Group"),
+			"fieldtype": "Link",
+			"options": "Student Group"
 		},
 		{
 			"fieldname": "party_account",

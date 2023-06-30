@@ -41,6 +41,13 @@ def get_columns():
 			"width": 110
 		},
 		{
+			"label": _("Program"),
+			"fieldtype": "Link",
+			"fieldname": "program",
+			"options":"Program",
+			"width": 110
+		},
+		{
 			"label": _("Receivable Account"),
 			"fieldtype": "Link",
 			"fieldname": "receivable_account",
@@ -157,9 +164,24 @@ def get_data(filters):
 		ts_filters["cost_center"] = filters["cost_center"]
 	if filters.get("report_date"):
 		ts_filters["posting_date"] =['<', filters["report_date"]]
+	if filters.get("program"):
+		ts_filters["program"] = filters["program"]
+	if filters.get("student_group"):
+		studentgroup=frappe.db.get_list('Student Group Student', filters={'parent': filters["student_group"]}, pluck="student")
+		ts_filters["student"]=['in', studentgroup]
+	if filters.get("student") and filters.get("student_group") :
+		studentgroup=frappe.db.get_list('Student Group Student', filters={'parent': filters["student_group"]}, pluck="student")
+		if filters.get("student") in studentgroup:
+			ts_filters["student"] = filters["student"]
+		else:
+			ts_filters["student"]=['in', []]
+		
+
+
 	posting_date1 = filters["report_date"]
 	ageing_based_on = filters.get("ageing_based_on")
-	fee=frappe.db.get_all("Fees", filters=ts_filters, fields=["name","student", "student_name", "posting_date", "due_date", "grand_total", "previous_outstanding_amount", "net_total", "outstanding_amount", "cost_center", "receivable_account", "currency"], order_by="student")
+	{}
+	fee=frappe.db.get_all("Fees", filters=ts_filters, fields=["name","student", "student_name", "posting_date", "due_date", "grand_total", "previous_outstanding_amount", "net_total", "outstanding_amount", "cost_center", "receivable_account", "currency", "program"], order_by="student")
 	payment_ent = frappe.db.get_all("Payment Entry", filters={"docstatus":1, "party_type":"Student", "payment_type":"Receive"}, fields=["name", "party", "party_name", "posting_date", "paid_amount", "cost_center"])
 	for i in fee:
 		i["voucher_type"] ="Fees"
