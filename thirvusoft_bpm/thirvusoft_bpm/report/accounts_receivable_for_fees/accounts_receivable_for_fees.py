@@ -40,6 +40,13 @@ def get_columns():
 			"fieldname": "student_name",
 			"width": 110
 		},
+    	{
+			"label": _("Fee Structure"),
+			"fieldtype": "Link",
+			"fieldname": "fee_structure",
+   			"options" : "Fee Structure",
+			"width": 200
+		},
 		{
 			"label": _("Program"),
 			"fieldtype": "Link",
@@ -148,6 +155,7 @@ def get_columns():
    			"options" : "Currency",
 			"width": 100
 		},
+  		
 		
 	]
 	return columns
@@ -181,7 +189,7 @@ def get_data(filters):
 	posting_date1 = filters["report_date"]
 	ageing_based_on = filters.get("ageing_based_on")
 	{}
-	fee=frappe.db.get_all("Fees", filters=ts_filters, fields=["name","student", "student_name", "posting_date", "due_date", "grand_total", "previous_outstanding_amount", "net_total", "outstanding_amount", "cost_center", "receivable_account", "currency", "program"], order_by="student")
+	fee=frappe.db.get_all("Fees", filters=ts_filters, fields=["name","student", "student_name", "posting_date", "due_date", "grand_total", "previous_outstanding_amount", "net_total", "outstanding_amount", "cost_center", "receivable_account", "currency", "program", "fee_structure"], order_by=f"""{"fee_structure, " if (filters.get("group_by_fee_structure")) else ''} student""")
 	payment_ent = frappe.db.get_all("Payment Entry", filters={"docstatus":1, "party_type":"Student", "payment_type":"Receive"}, fields=["name", "party", "party_name", "posting_date", "paid_amount", "cost_center"])
 	for i in fee:
 		i["voucher_type"] ="Fees"
@@ -250,8 +258,7 @@ def get_data(filters):
 				i["range3"] =0
 				i["range4"] =0
 				i["range1"] =0
-	if not filters.get("group_by_party"):
-		
+	if not filters.get("group_by_party") and not filters.get("group_by_fee_structure"):
 		return fee
 	total1=0
 	total2=0
@@ -273,7 +280,7 @@ def get_data(filters):
 		total8 +=fee[i].get("range5") or 0
 		final.append(fee[i])
 		
-		if (fee[i]["student"] != fee[i+1]["student"]):
+		if f"""{fee[i]["student"] if filters.get("group_by_party") else ""}{fee[i]["fee_structure"] if filters.get("group_by_fee_structure") else ""}"""!= f"""{fee[i+1]["student"] if filters.get("group_by_party") else ""}{fee[i+1]["fee_structure"] if filters.get("group_by_fee_structure") else ""}""":
 			total={}
 			total["grand_total"]=total1
 			total["paid"]=total2
@@ -292,8 +299,34 @@ def get_data(filters):
 			total6=0
 			total7=0
 			total8=0
-
-			
+	total1 +=fee[i]["grand_total"]
+	total2 +=fee[i]["paid"]
+	total3 +=fee[i]["outstanding_amount"]
+	total4 +=fee[i].get("range1") or 0
+	total5 +=fee[i].get("range2") or 0
+	total6 +=fee[i].get("range3") or 0
+	total7 +=fee[i].get("range4") or 0
+	total8 +=fee[i].get("range5") or 0
+	final.append(fee[i])
+	total={}
+	total["grand_total"]=total1
+	total["paid"]=total2
+	total["outstanding_amount"]=total3
+	total["range1"]=total4
+	total["range2"]=total5
+	total["range3"]=total6
+	total["range4"]=total7
+	total["range5"]=total8
+	final.append(total)
+	total1=0
+	total2=0
+	total3=0
+	total4=0
+	total5=0
+	total6=0
+	total7=0
+	total8=0
+	
 	return final
 		
 

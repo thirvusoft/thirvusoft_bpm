@@ -93,6 +93,11 @@ frappe.query_reports["Accounts Receivable for Fees"] = {
 			"label": __("Group By Student"),
 			"fieldtype": "Check"
 		},
+		{
+			"fieldname": "group_by_fee_structure",
+			"label": __("Group By Fee Structure"),
+			"fieldtype": "Check"
+		},
 		
 	],
 
