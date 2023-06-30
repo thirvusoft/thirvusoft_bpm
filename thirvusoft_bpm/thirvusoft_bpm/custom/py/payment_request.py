@@ -80,8 +80,8 @@ def whatsapp_message(doc,event):
                     #frappe.printerr(response.__dict__)
                     frappe.log_error(title='error msg', message=response.__dict__)
                     frappe.delete_doc('File',pdf_url.name)
-                    doc = frappe.new_doc("Whatsapp Log")
-                    doc.update({
+                    log_doc = frappe.new_doc("Whatsapp Log")
+                    log_doc.update({
                         "mobile_no": mobile_number,
                         
                         "status":"Success",
@@ -89,9 +89,11 @@ def whatsapp_message(doc,event):
                         "response" : response,
                         "last_execution": frappe.utils.now()
                     })
-                    doc.flags.ignore_permissions = True
-                    doc.flags.ignore_mandatory = True
-                    doc.insert()
+                    log_doc.flags.ignore_permissions = True
+                    log_doc.flags.ignore_mandatory = True
+                    log_doc.reference_doctype = "Payment Request"
+                    log_doc.reference_name = doc.name
+                    log_doc.insert()
                     frappe.delete_doc('File',pdf_url.name)
             except Exception as e:
                 if urls and i["phone_number"]:
@@ -99,8 +101,8 @@ def whatsapp_message(doc,event):
                     url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
-                    doc = frappe.new_doc("Whatsapp Log")
-                    doc.update({
+                    log_doc = frappe.new_doc("Whatsapp Log")
+                    log_doc.update({
                         "mobile_no": mobile_number,
                         
                         "status":"Failed",
@@ -108,7 +110,9 @@ def whatsapp_message(doc,event):
                         "response" : e,
                         "last_execution": frappe.utils.now()
                     })
-                    doc.flags.ignore_permissions = True
-                    doc.flags.ignore_mandatory = True
-                    doc.insert()
+                    log_doc.flags.ignore_permissions = True
+                    log_doc.flags.ignore_mandatory = True
+                    log_doc.reference_doctype = "Payment Request"
+                    log_doc.reference_name = doc.name
+                    log_doc.insert()
                     frappe.delete_doc('File',pdf_url.name)

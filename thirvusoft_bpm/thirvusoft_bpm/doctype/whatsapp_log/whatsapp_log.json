@@ -10,7 +10,9 @@
   "payload",
   "response",
   "last_execution",
-  "status"
+  "status",
+  "reference_doctype",
+  "reference_name"
  ],
  "fields": [
   {
@@ -40,11 +42,25 @@
    "in_standard_filter": 1,
    "label": "Status",
    "options": "Success\nFailed"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference Doctype",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_doctype",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-30 16:20:59.757675",
+ "modified": "2023-06-30 18:36:35.804257",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Whatsapp Log",

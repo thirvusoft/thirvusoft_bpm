@@ -52,14 +52,50 @@ def send_message_confirmation(doc,event):
                 pdf_name = doc.name + '.pdf'
                 pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
                 urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
-                if urls and i["phone_number"]:
-                    mobile_number = i["phone_number"].replace("+", "")
-                    frappe.errprint(mobile_number)
-                    url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
-                    payload={}
-                    headers = {}
-                    response = requests.request("GET", url, headers=headers, data=payload)
-                    frappe.delete_doc('File',pdf_url.name)
+                try:
+                    if urls and i["phone_number"]:
+                        mobile_number = i["phone_number"].replace("+", "")
+                        url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                        payload={}
+                        headers = {}
+                        response = requests.request("GET", url, headers=headers, data=payload)
+                        frappe.delete_doc('File',pdf_url.name)
+                        log_doc = frappe.new_doc("Whatsapp Log")
+                        log_doc.update({
+                            "mobile_no": mobile_number,
+                            
+                            "status":"Success",
+                            "payload": f"{url}",
+                            "response" : response,
+                            "last_execution": frappe.utils.now()
+                        })
+                        log_doc.flags.ignore_permissions = True
+                        log_doc.flags.ignore_mandatory = True
+                        log_doc.reference_doctype = "Payment Entry"
+                        log_doc.reference_name = doc.name
+                        log_doc.insert()
+                        frappe.delete_doc('File',pdf_url.name)
+                except Exception as e:
+                    if urls and i["phone_number"]:
+                        mobile_number = i["phone_number"].replace("+", "")
+                        url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                        payload={}
+                        headers = {}
+                        log_doc = frappe.new_doc("Whatsapp Log")
+                        log_doc.update({
+                            "mobile_no": mobile_number,
+                            
+                            "status":"Failed",
+                            "payload": f"{url}",
+                            "response" : e,
+                            "last_execution": frappe.utils.now()
+                        })
+                        log_doc.flags.ignore_permissions = True
+                        log_doc.flags.ignore_mandatory = True
+                        log_doc.reference_doctype = "Payment Entry"
+                        log_doc.reference_name = doc.name
+                        log_doc.insert()
+                        frappe.delete_doc('File',pdf_url.name)
 
             final_msg = def_v + encoded_s
             final_msg.replace('%',' ')
