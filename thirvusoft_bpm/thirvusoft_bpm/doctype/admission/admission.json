@@ -26,7 +26,7 @@
    "depends_on": "eval:!doc.pre_admission",
    "description": "(Should be a Integer Value)",
    "fieldname": "series_no",
-   "fieldtype": "Icon",
+   "fieldtype": "Int",
    "in_list_view": 1,
    "in_preview": 1,
    "in_standard_filter": 1,
