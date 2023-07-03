@@ -76,5 +76,13 @@ def previous_outstanding_amount(doc,event):
             doc.grand_total  = doc.net_total
     else:
             doc.grand_total  = doc.net_total
-    doc.grand_total = doc.grand_total + (doc.previous_outstanding_amount or 0)
-    doc.outstanding_amount  = doc.grand_total
+    if frappe.db.get_value('Company',doc.company,'enable_prevoius_amount'):
+        if not doc.disable_previous_outstanding_amount_:
+            doc.grand_total = doc.grand_total + (doc.previous_outstanding_amount or 0)
+            doc.outstanding_amount  = doc.grand_total
+        else:
+            doc.grand_total = doc.net_total
+            doc.outstanding_amount  = doc.grand_total
+    else:
+        doc.grand_total = doc.net_total
+        doc.outstanding_amount  = doc.grand_total
