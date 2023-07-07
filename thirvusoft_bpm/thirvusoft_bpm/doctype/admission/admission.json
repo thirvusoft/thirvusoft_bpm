@@ -10,7 +10,7 @@
  "field_order": [
   "edu_branch",
   "pre_admission",
-  "series_no",
+  "series_number",
   "series",
   "admission"
  ],
@@ -21,17 +21,6 @@
    "label": "Edu Branch",
    "options": "Edu Branch",
    "reqd": 1
-  },
-  {
-   "depends_on": "eval:!doc.pre_admission",
-   "description": "(Should be a Integer Value)",
-   "fieldname": "series_no",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "in_preview": 1,
-   "in_standard_filter": 1,
-   "label": "Series No",
-   "mandatory_depends_on": "eval:!doc.pre_admission"
   },
   {
    "allow_in_quick_entry": 1,
@@ -60,11 +49,22 @@
    "fieldtype": "Data",
    "label": "Series",
    "mandatory_depends_on": "eval:doc.pre_admission"
+  },
+  {
+   "depends_on": "eval:!doc.pre_admission",
+   "description": "(Should be a Integer Value)",
+   "fieldname": "series_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Series No",
+   "mandatory_depends_on": "eval:!doc.pre_admission"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-30 12:20:53.447893",
+ "modified": "2023-07-06 18:33:48.590211",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Admission",

@@ -81,6 +81,7 @@ def get_columns():
    			"options" : "voucher_type",
 			"width": 100
 		},
+     
 		 {
 			"label": _("Due Date"),
 			"fieldtype": "Date",
@@ -160,7 +161,6 @@ def get_columns():
 	]
 	return columns
 def get_data(filters):
-	data=[]
 	ts_filters={"docstatus": 1}
 	if filters.get("company"):
 		ts_filters["company"] = filters["company"]
@@ -191,9 +191,13 @@ def get_data(filters):
 	{}
 	fee=frappe.db.get_all("Fees", filters=ts_filters, fields=["name","student", "student_name", "posting_date", "due_date", "grand_total", "previous_outstanding_amount", "net_total", "outstanding_amount", "cost_center", "receivable_account", "currency", "program", "fee_structure"], order_by=f"""{"fee_structure, " if (filters.get("group_by_fee_structure")) else ''} student""")
 	payment_ent = frappe.db.get_all("Payment Entry", filters={"docstatus":1, "party_type":"Student", "payment_type":"Receive"}, fields=["name", "party", "party_name", "posting_date", "paid_amount", "cost_center"])
+	data1=[]
+
 	for i in fee:
 		i["voucher_type"] ="Fees"
 		i["paid"]=(i.grand_total)-(i.outstanding_amount)
+		test=frappe.get_all("Journal Entry Account", filters={"reference_type":"Fees", "reference_name":i.name, "debit_in_account_currency": ["is", "set"], "docstatus":1}, pluck="parent" ,group_by="parent")
+		i["journal_entry"]=", ".join([f"""<a href="/app/journal-entry/{i}">{i}</a> """ for i in test])
 		if filters.get("ageing_based_on") == "Posting Date":
 			i["age"]= date_diff(posting_date1, i.posting_date)
 			if i["age"] <= 30:
@@ -258,6 +262,13 @@ def get_data(filters):
 				i["range3"] =0
 				i["range4"] =0
 				i["range1"] =0
+		# jv_entry=frappe.get_all("Journal Entry Account", filters={"reference_type":"Fees", "reference_name":i.name, "debit_in_account_currency": [">", 0], "docstatus":1}, fields=["parent", "debit_in_account_currency", "party"] ,group_by="parent")
+		# data1.append(i)
+		# for j in jv_entry:
+		# 	jv_entry_parent=frappe.get_value("Journal Entry",j.parent, "posting_date" )
+		# 	data1.append({"voucher_type": "Journal Entry", "name":j.parent, "paid":j.debit_in_account_currency, "student":j.party or "", "posting_date":jv_entry_parent})
+			# i["journal_entry"]=", ".join([f"""<a href="/app/journal-entry/{i}">{i}</a> """ for i in test])
+	fee=data1
 	if not filters.get("group_by_party") and not filters.get("group_by_fee_structure"):
 		return fee
 	total1=0
@@ -270,9 +281,9 @@ def get_data(filters):
 	total8=0
 	final=[]
 	for i in range(len(fee)-1):
-		total1 +=fee[i]["grand_total"]
-		total2 +=fee[i]["paid"]
-		total3 +=fee[i]["outstanding_amount"]
+		total1 +=fee[i].get("grand_total") or 0
+		total2 +=fee[i].get("paid") or 0 
+		total3 +=fee[i].get("outstanding_amount") or 0
 		total4 +=fee[i].get("range1") or 0
 		total5 +=fee[i].get("range2") or 0
 		total6 +=fee[i].get("range3") or 0
@@ -299,9 +310,9 @@ def get_data(filters):
 			total6=0
 			total7=0
 			total8=0
-	total1 +=fee[i]["grand_total"]
-	total2 +=fee[i]["paid"]
-	total3 +=fee[i]["outstanding_amount"]
+	total1 +=fee[i].get("grand_total") or 0
+	total2 +=fee[i].get("paid") or 0
+	total3 +=fee[i].get("outstanding_amount") or 0
 	total4 +=fee[i].get("range1") or 0
 	total5 +=fee[i].get("range2") or 0
 	total6 +=fee[i].get("range3") or 0

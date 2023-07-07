@@ -31,7 +31,8 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Fees" : "thirvusoft_bpm/custom/js/fees.js"}
+doctype_js = {"Fees" : "thirvusoft_bpm/custom/js/fees.js",
+				"Guardian":"thirvusoft_bpm/custom/js/guardian.js"}
 doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/fees_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
