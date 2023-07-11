@@ -10,7 +10,7 @@ frappe.ui.form.on('Admission', {
 					edu_branch: frm.doc.edu_branch
 				},
 				callback:function(res){
-					cur_frm.set_value('series_no',res.message)
+					cur_frm.set_value('series_number',res.message)
 				}
 			});
 		}
