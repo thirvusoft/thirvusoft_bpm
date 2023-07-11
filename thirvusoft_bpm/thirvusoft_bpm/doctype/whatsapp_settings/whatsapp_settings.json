@@ -8,7 +8,17 @@
  "field_order": [
   "enable",
   "instance_id",
-  "access_token"
+  "access_token",
+  "section_break_hubko",
+  "enable_message_for_purchase_order",
+  "enable_message_for_request_for_quotation",
+  "enable_message_for_payment_entry",
+  "section_break_guwpk",
+  "purchase_order",
+  "request_for_quotation",
+  "payment_entry",
+  "section_break_v99t0",
+  "example"
  ],
  "fields": [
   {
@@ -30,12 +40,68 @@
    "fieldtype": "Data",
    "label": "Access Token",
    "mandatory_depends_on": "eval:doc.enable"
+  },
+  {
+   "fieldname": "section_break_guwpk",
+   "fieldtype": "Section Break",
+   "label": "Message Template for Buying"
+  },
+  {
+   "default": "Dear {{doc.supplier}}, Hope you received the payment",
+   "fieldname": "purchase_order",
+   "fieldtype": "Small Text",
+   "label": "Purchase Order"
+  },
+  {
+   "default": "Dear {{supplier}}, Hope you received the payment",
+   "description": "<p> <span style=\"color: red;\">* </span>Supplier name can be accessed as {{supplier}}</p>",
+   "fieldname": "request_for_quotation",
+   "fieldtype": "Small Text",
+   "label": "Request for Quotation"
+  },
+  {
+   "default": "Dear {{doc.party}}, Hope you received the payment",
+   "fieldname": "payment_entry",
+   "fieldtype": "Small Text",
+   "label": "Payment Entry"
+  },
+  {
+   "fieldname": "example",
+   "fieldtype": "HTML",
+   "label": "Example",
+   "options": "<pre><h5>Message Example</h5>\n\n&lt;Dear {{&nbsp;doc.party }}, Hope you received our Service.&lt;/a&gt;\n\n</pre>\n"
+  },
+  {
+   "fieldname": "section_break_v99t0",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_hubko",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_message_for_purchase_order",
+   "fieldtype": "Check",
+   "label": "Enable Message for Purchase Order"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_message_for_request_for_quotation",
+   "fieldtype": "Check",
+   "label": "Enable Message for Request for Quotation"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_message_for_payment_entry",
+   "fieldtype": "Check",
+   "label": "Enable Message for Payment Entry"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-04-24 16:36:10.156147",
+ "modified": "2023-07-11 13:44:59.802325",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Whatsapp Settings",

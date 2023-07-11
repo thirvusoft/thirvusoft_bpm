@@ -31,8 +31,11 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Fees" : "thirvusoft_bpm/custom/js/fees.js",
-				"Guardian":"thirvusoft_bpm/custom/js/guardian.js"}
+doctype_js = {
+				"Fees" : "thirvusoft_bpm/custom/js/fees.js",
+				"Guardian":"thirvusoft_bpm/custom/js/guardian.js",
+				"Payment Entry":"thirvusoft_bpm/custom/js/payment_entry.js"
+			}
 doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/fees_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -59,6 +62,8 @@ doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/fees_list.js"}
 
 # before_install = "thirvusoft_bpm.install.before_install"
 # after_install = "thirvusoft_bpm.install.after_install"
+
+after_migrate = "thirvusoft_bpm.thirvusoft_bpm.custom.py.customisation.payment_entry_customizations"
 
 # Uninstallation
 # ------------
@@ -114,6 +119,12 @@ doc_events = {
 	},
     "Payment Entry": {
 		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
+	},
+	"Purchase Order": {
+		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.purchase_order.send_purchase_msg",
+	},
+	"Request for Quotation": {
+		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.request_for_quotation.send_purchase_msg",
 	},
     "Student": {
 	 	"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.student.validate_wapp_enable",

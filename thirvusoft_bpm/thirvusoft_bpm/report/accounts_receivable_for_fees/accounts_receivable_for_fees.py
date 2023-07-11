@@ -40,7 +40,7 @@ def get_columns():
 			"fieldname": "student_name",
 			"width": 110
 		},
-    	{
+		{
 			"label": _("Fee Structure"),
 			"fieldtype": "Link",
 			"fieldname": "fee_structure",
@@ -74,14 +74,14 @@ def get_columns():
 			"fieldname": "voucher_type",
 			"width": 100
 		},
-    	{
+		{
 			"label": _("Voucher No"),
 			"fieldtype": "Dynamic Link",
 			"fieldname": "name",
    			"options" : "voucher_type",
 			"width": 100
 		},
-     
+	 
 		 {
 			"label": _("Due Date"),
 			"fieldtype": "Date",
@@ -94,55 +94,55 @@ def get_columns():
 			"fieldname": "grand_total",
 			"width": 100
 		},
-    	 {
+		 {
 			"label": _("Paid Amount"),
 			"fieldtype": "Currency",
 			"fieldname": "paid",
 			"width": 100,
 			"default":0
 		},
-       {
+	   {
 			"label": _("Outstanding Amount"),
 			"fieldtype": "Currency",
 			"fieldname": "outstanding_amount",
 			"width": 100,
 			"default":0
 		},
-     	{
+	 	{
 			"label": _("Age (Days"),
 			"fieldtype": "Int",
 			"fieldname": "age",
 			"width": 100
 		},
-      {
+	  {
 			"label": _("0-30"),
 			"fieldtype": "Currency",
 			"fieldname": "range1",
 			"width": 100,
 			"default":0
 		},
-      {
+	  {
 			"label": _("31-60"),
 			"fieldtype": "Currency",
 			"fieldname": "range2",
 			"width": 100,
 			"default":0
 		},
-      {
+	  {
 			"label": _("61-90"),
 			"fieldtype": "Currency",
 			"fieldname": "range3",
 			"width": 100,
 			"default":0
 		},
-      {
+	  {
 			"label": _("91-120"),
 			"fieldtype": "Currency",
 			"fieldname": "range4",
 			"width": 100,
 			"default":0
 		},
-       {
+	   {
 			"label": _("120-Above"),
 			"fieldtype": "Currency",
 			"fieldname": "range5",
@@ -196,8 +196,6 @@ def get_data(filters):
 	for i in fee:
 		i["voucher_type"] ="Fees"
 		i["paid"]=(i.grand_total)-(i.outstanding_amount)
-		test=frappe.get_all("Journal Entry Account", filters={"reference_type":"Fees", "reference_name":i.name, "debit_in_account_currency": ["is", "set"], "docstatus":1}, pluck="parent" ,group_by="parent")
-		i["journal_entry"]=", ".join([f"""<a href="/app/journal-entry/{i}">{i}</a> """ for i in test])
 		if filters.get("ageing_based_on") == "Posting Date":
 			i["age"]= date_diff(posting_date1, i.posting_date)
 			if i["age"] <= 30:
@@ -262,12 +260,12 @@ def get_data(filters):
 				i["range3"] =0
 				i["range4"] =0
 				i["range1"] =0
+		jv_qr = frappe.db.sql(f'''select parent,debit_in_account_currency,party from `tabJournal Entry Account` where reference_type ="Fees" and reference_name = '{i.name}' and debit_in_account_currency > 0 and docstatus = 1 ''',as_dict=1)
 		# jv_entry=frappe.get_all("Journal Entry Account", filters={"reference_type":"Fees", "reference_name":i.name, "debit_in_account_currency": [">", 0], "docstatus":1}, fields=["parent", "debit_in_account_currency", "party"] ,group_by="parent")
-		# data1.append(i)
-		# for j in jv_entry:
-		# 	jv_entry_parent=frappe.get_value("Journal Entry",j.parent, "posting_date" )
-		# 	data1.append({"voucher_type": "Journal Entry", "name":j.parent, "paid":j.debit_in_account_currency, "student":j.party or "", "posting_date":jv_entry_parent})
-			# i["journal_entry"]=", ".join([f"""<a href="/app/journal-entry/{i}">{i}</a> """ for i in test])
+		data1.append(i)
+		for j in jv_qr:
+			jv_entry_parent=frappe.get_value("Journal Entry",j.parent, "posting_date" )
+			data1.append({"voucher_type": "Journal Entry", "name":j.parent, "paid":j.debit_in_account_currency, "student":j.party or "", "posting_date":jv_entry_parent})
 	fee=data1
 	if not filters.get("group_by_party") and not filters.get("group_by_fee_structure"):
 		return fee
