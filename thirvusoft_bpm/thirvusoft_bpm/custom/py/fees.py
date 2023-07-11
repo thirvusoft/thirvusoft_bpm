@@ -32,6 +32,11 @@ def create_payment_request(list_of_docs=None):
                 doc.update(make_payment_request(dt="Fees",dn=fees_doc.name,party_type= "Student",party= fees_doc.student,recipient_id= fees_doc.student_email))
                 doc.mode_of_payment = 'Gateway'
                 doc.payment_request_type = 'Inward'
+                doc.print_format = frappe.db.get_value(
+                    "Property Setter",
+                    dict(property="default_print_format", doc_type="Fees"),
+                    "value",
+                )
                 # if doc.grand_total > 0:
                 filters = {'student':fees_doc.student,'outstanding_amount':['!=',0],'docstatus':1}
                 if fees_doc.name:

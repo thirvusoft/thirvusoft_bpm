@@ -44,7 +44,7 @@ def send_message_confirmation(doc,event):
             access_token =  frappe.db.get_single_value('Whatsapp Settings','access_token')
             default_print_format = frappe.db.get_value(
                     "Property Setter",
-                    dict(property="default_print_format", doc_type=doc.doctype),
+                    dict(property="default_print_format", doc_type=ref.reference_doctype),
                     "value",
                 )
             for i in guardians:
