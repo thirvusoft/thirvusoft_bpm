@@ -8,6 +8,16 @@ import requests
 from frappe.utils.file_manager import save_file
 from frappe.utils.pdf import get_pdf
 from frappe.utils.background_jobs import enqueue
+from erpnext.accounts.doctype.payment_entry.payment_entry import PaymentEntry
+
+class CustomPayment(PaymentEntry):
+    def validate_transaction_reference(self):
+        bank_account = self.paid_to if self.payment_type == "Receive" else self.paid_from
+        bank_account_type = frappe.db.get_value("Account", bank_account, "account_type")
+
+        # if bank_account_type == "Bank":
+        # 	if not self.reference_no or not self.reference_date:
+        # 		frappe.throw(_("Reference No and Reference Date is mandatory for Bank transaction"))
 
 @frappe.whitelist()
 def send_message_confirmation(doc,event):
