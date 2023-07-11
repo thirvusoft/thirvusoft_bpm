@@ -40,7 +40,6 @@
    "default": "0",
    "fieldname": "pre_admission",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Pre Admission"
   },
   {
@@ -64,7 +63,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-06 18:33:48.590211",
+ "modified": "2023-07-11 17:05:22.439059",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Admission",
