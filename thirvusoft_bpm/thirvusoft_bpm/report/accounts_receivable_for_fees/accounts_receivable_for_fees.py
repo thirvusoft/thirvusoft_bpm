@@ -266,6 +266,11 @@ def get_data(filters):
 		for j in jv_qr:
 			jv_entry_parent=frappe.get_value("Journal Entry",j.parent, "posting_date" )
 			data1.append({"voucher_type": "Journal Entry", "name":j.parent, "paid":j.debit_in_account_currency, "student":j.party or "", "posting_date":jv_entry_parent})
+		
+		pay_ent = frappe.db.sql(f'''select ref.parent,doc.paid_amount,doc.posting_date,doc.party from `tabPayment Entry Reference` as ref left join `tabPayment Entry` as doc on ref.parent = doc.name  where ref.reference_doctype ="Fees" and ref.reference_name = '{i.name}' and ref.allocated_amount > 0 and ref.docstatus = 1 ''',as_dict=1)
+		for k in pay_ent:
+			data1.append({"voucher_type": "Payment Entry", "name":k.get('parent'), "paid":k.get('paid_amount'), "student":k.get('party') or "", "posting_date":k.get('posting_date')})
+		
 	fee=data1
 	if not filters.get("group_by_party") and not filters.get("group_by_fee_structure"):
 		return fee
