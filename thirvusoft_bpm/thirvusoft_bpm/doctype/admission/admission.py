@@ -7,8 +7,8 @@ from frappe.model.document import Document
 class Admission(Document):
     def autoname(self):
         if not self.pre_admission:
-            self.name = self.edu_branch +' - '+ self.series_number
-            self.admission = self.edu_branch +' - '+ self.series_number
+            self.name = self.edu_branch +' - '+ str(self.series_number)
+            self.admission = self.edu_branch +' - '+ str(self.series_number)
         else:
             self.name = self.edu_branch +' - '+ self.series
             self.admission = self.edu_branch +' - '+ self.series
