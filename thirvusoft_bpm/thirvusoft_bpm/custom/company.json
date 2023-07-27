@@ -1454,7 +1454,7 @@
    "creation": "2023-07-03 14:58:13.349635",
    "default": null,
    "depends_on": null,
-   "description": "To get reflected in Grand total of Fees",
+   "description": "To get reflected in Net Payable of Fees",
    "docstatus": 0,
    "dt": "Company",
    "fetch_from": null,
