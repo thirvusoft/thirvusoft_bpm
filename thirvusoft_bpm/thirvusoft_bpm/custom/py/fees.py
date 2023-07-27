@@ -72,6 +72,8 @@ def previous_outstanding_amount(doc,event):
     filters = {'student':doc.student,'outstanding_amount':['!=',0],'docstatus':1}
     if doc.name:
         filters.update({'name':['!=',doc.name]})
+    if doc.company and frappe.db.get_value("Company",doc.company,'outstanding_receivable_account'):
+        filters.update({'receivable_account':['=',frappe.db.get_value("Company",doc.company,'outstanding_receivable_account')]})
     sum = frappe.get_all('Fees',filters,['sum(net_total) as sum'])
     doc.previous_outstanding_amount = sum[0].get('sum') if sum else 0
     doc.net_total = doc.grand_total
@@ -83,7 +85,7 @@ def previous_outstanding_amount(doc,event):
     else:
             doc.grand_total  = doc.net_total
     if frappe.db.get_value('Company',doc.company,'enable_prevoius_amount'):
-        if not doc.disable_previous_outstanding_amount_:
+        if not doc.disable_previous_outstanding_amount_ and frappe.db.get_value("Company",doc.company,'outstanding_receivable_account') == doc.receivable_account:
             doc.net_payable = doc.grand_total + (doc.previous_outstanding_amount or 0)
             # doc.outstanding_amount  = doc.grand_total
         else:
