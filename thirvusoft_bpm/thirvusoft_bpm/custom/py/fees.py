@@ -91,7 +91,7 @@ def previous_outstanding_amount(doc,event):
     else:
             doc.grand_total  = doc.net_total
     if frappe.db.get_value('Company',doc.company,'enable_prevoius_amount'):
-        if not doc.disable_previous_outstanding_amount_ and allow_outstanding and frappe.db.get_value("Company",doc.company,'outstanding_receivable_account') == doc.receivable_account:
+        if not doc.disable_previous_outstanding_amount_ and allow_outstanding:
             doc.net_payable = doc.grand_total + (doc.previous_outstanding_amount or 0)
             # doc.outstanding_amount  = doc.grand_total
         else:
