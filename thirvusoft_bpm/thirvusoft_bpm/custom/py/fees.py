@@ -44,7 +44,8 @@ def create_payment_request(list_of_docs=None):
                 sum = frappe.get_all('Fees',filters,['sum(outstanding_amount) as sum'])
                 previous_outstanding_amount = sum[0].get('sum') if sum else 0
                 # doc.grand_total += previous_outstanding_amount
-                doc.grand_total = fees_doc.net_payable
+                # doc.grand_total = fees_doc.net_payable
+                doc.grand_total = fees_doc.outstanding_amount
                 doc.save()
                 frappe.db.set_value('Bulk Transaction Log Table',{'parent':update_dict[fees],'parentfield': "bulk_transaction_log_table",'fees':fees},'status','Completed')
                 name = frappe.get_doc('Bulk Transaction Log',new_transaction.name)
@@ -101,5 +102,6 @@ def previous_outstanding_amount(doc,event):
             doc.net_payable = doc.net_total
             doc.outstanding_amount  = doc.grand_total
     else:
+        doc.previous_outstanding_amount  = 0
         doc.net_payable = doc.net_total
         # doc.outstanding_amount  = doc.grand_total
