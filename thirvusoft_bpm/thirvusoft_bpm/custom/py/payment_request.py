@@ -47,6 +47,7 @@ def background_submit(doc,event):
     if not submit:
         frappe.msgprint('Submission has been moved to Background.. Kindly check after some time..')
         submit = True
+    frappe.enqueue(whatsapp_message, doc=doc, queue="long")
 
 
 def whatsapp_message(doc):
