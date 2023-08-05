@@ -1,0 +1,42 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2023-08-03 12:22:57.172940",
+ "disable_prepared_report": 1,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "MKRE - PO",
+ "modified": "2023-08-03 20:11:16.585997",
+ "modified_by": "Administrator",
+ "module": "Thirvusoft Bpm",
+ "name": "Student Balance",
+ "owner": "Administrator",
+ "prepared_report": 1,
+ "ref_doctype": "Fees",
+ "report_name": "Student Balance",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Academics User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Custom_Academics Manager"
+  },
+  {
+   "role": "Accounts manager_1"
+  },
+  {
+   "role": "Accounts user_1"
+  }
+ ]
+}
