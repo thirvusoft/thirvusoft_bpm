@@ -7,7 +7,7 @@ from erpnext.accounts.doctype.payment_request.payment_request import PaymentRequ
 from frappe.core.doctype.communication.email import get_attach_link
 from frappe.utils.pdf import get_pdf
 from frappe.utils.file_manager import save_file
-
+submit = False
 
 def get_advance_entries(doc,event):
     # if doc.party_type == "Student" and doc.party and frappe.db.get_value('Student',doc.party,'virtual_account'):
@@ -42,7 +42,14 @@ def get_advance_entries(doc,event):
         if doc.grand_total <= 0 and doc.payment_gateway_account:
             doc.message = frappe.db.get_value('Payment Gateway Account',doc.payment_gateway_account,'non_payment_message')
 
-def whatsapp_message(doc,event):
+def background_submit(doc,event):
+    global submit
+    if not submit:
+        frappe.msgprint('Submission has been moved to Background.. Kindly check after some time..')
+        submit = True
+
+
+def whatsapp_message(doc):
     if frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and doc.reference_doctype == 'Fees' and doc.reference_name:
         html = PaymentRequest.get_message(doc)
         v=(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html ).split("<br>")).split(' ') ))
@@ -78,7 +85,6 @@ def whatsapp_message(doc,event):
                     headers = {}
                     response = requests.request("GET", url, headers=headers, data=payload)
                     #frappe.printerr(response.__dict__)
-                    frappe.log_error(title='error msg', message=response.__dict__)
                     frappe.delete_doc('File',pdf_url.name)
                     log_doc = frappe.new_doc("Whatsapp Log")
                     log_doc.update({
