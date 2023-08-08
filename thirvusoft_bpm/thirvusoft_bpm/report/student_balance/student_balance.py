@@ -121,7 +121,7 @@ def get_data(filters):
 							left join `tabStudent` as stud on stud.name = gl.party 
 							where gl.posting_date between '{1}' and '{2}' 
 							and {3} order by gl.party,gl.debit,gl.voucher_no,gl.posting_date'''.format(company,start_date,end_date,conditions),as_dict= True)
-	check = sample_data[0].get('party')
+	check = sample_data[0].get('party') if sample_data else None
 	debit = 0
 	credit = 0
 	net = 0

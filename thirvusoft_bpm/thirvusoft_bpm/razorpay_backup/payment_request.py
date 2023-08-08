@@ -443,6 +443,14 @@ def make_payment_request(**args):
 				"bank_account": bank_account,
 			}
 		)
+		# customization by thirvusoft
+		if args.dt== "Fees":
+			net_payable=frappe.get_value("Fees",args.dn,"net_payable")
+			pr.update(
+			{
+				"grand_total": net_payable,
+			}
+		)
 
 		if args.order_type == "Shopping Cart" or args.mute_email:
 			pr.flags.mute_email = True
