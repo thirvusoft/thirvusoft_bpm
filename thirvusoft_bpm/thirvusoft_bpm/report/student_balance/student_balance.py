@@ -117,10 +117,50 @@ def get_data(filters):
 		end_date = frappe.get_value('Fiscal Year',to_fiscal_year,'year_end_date')
 
 	sample_data = frappe.db.sql('''select gl.party as party,stud.first_name as party_name,gl.voucher_type,gl.voucher_no,gl.against_voucher_type,
-							gl.against_voucher,gl.fiscal_year,gl.posting_date,gl.debit,gl.credit,gl.debit - gl.credit as net from `tabGL Entry` as gl 
+							gl.against_voucher,gl.fiscal_year,DATE_FORMAT(convert(gl.posting_date, char),'%Y-%m-%d') as posting_date,gl.debit,gl.credit,gl.debit - gl.credit as net from `tabGL Entry` as gl 
 							left join `tabStudent` as stud on stud.name = gl.party 
 							where gl.posting_date between '{1}' and '{2}' 
-							and {3} order by gl.party,gl.debit,gl.voucher_no,gl.posting_date'''.format(company,start_date,end_date,conditions),as_dict= True)
+							and {3} 
+       						order by 
+								CASE
+									WHEN IFNULL(gl.credit, 0) != 0
+										THEN 0
+									ELSE 1
+								END,
+             					gl.party,
+								gl.posting_date,
+								gl.debit,
+								gl.credit,
+								gl.voucher_no
+								
+       '''.format(company,start_date,end_date,conditions),as_dict= True)
+	# sample_data=[]
+	# a=[]
+	# a_debit, a_credit=[],[]
+	# for  i in gl_data:
+	# 	check = a[-1].get('party') if a else None
+	# 	if check != i['party']:
+	# 		a_debit=sorted(a_debit, key=lambda x: x['posting_date'])
+	# 		a_credit=sorted(a_credit, key=lambda x: x['posting_date'])
+	# 		sample_data.extend(a_credit+a_debit)
+			
+	# 		if i["credit"]:
+	# 			a_credit=[i]
+	# 		else:
+	# 			a_debit=[i]
+	# 	else:
+	# 		if i["credit"]:
+	# 			a_credit.append(i)
+	# 		else:
+	# 			a_debit.append(i)
+	# 	a.append(i)
+	# a_debit=sorted(a_debit, key=lambda x: x['posting_date'])
+	# a_credit=sorted(a_credit, key=lambda x: x['posting_date'])
+	# frappe.errprint([{"date":i["posting_date"]} for i in a_credit])
+	# frappe.errprint([{"date":i["posting_date"]} for i in a_debit])
+	# frappe.errprint(a_credit)
+	# frappe.errprint(a_debit)
+	# sample_data.extend(a_credit+a_debit)
 	check = sample_data[0].get('party') if sample_data else None
 	debit = 0
 	credit = 0
@@ -130,73 +170,74 @@ def get_data(filters):
 	total_net = 0
 	row_check = 0
 	for i in sample_data:
-		if check == i.get('party') and i != sample_data[-1]:
+		if frappe.get_value('Fees',i.get('voucher_no'),'docstatus') != 2 and frappe.get_value('Fees',i.get('against_voucher'),'docstatus') != 2 :
+			if check == i.get('party') and i != sample_data[-1]:
 
-			if i != sample_data[0]:
+				if i != sample_data[0]:
+					i.update({'party':""})
+
+				debit+=i.get('debit') or 0
+				credit+=i.get('credit') or 0
+				net+=i.get('net') or 0
+
+				total_debit +=i.get('debit') or 0
+				total_credit +=i.get('credit') or 0
+				total_net += i.get('net') or 0
+				if not row_check and i.get('debit')>0:
+
+					row_check = 1
+				data.append(i)
+			elif i == sample_data[-1]:
+				party = i.get('party')
 				i.update({'party':""})
 
-			debit+=i.get('debit') or 0
-			credit+=i.get('credit') or 0
-			net+=i.get('net') or 0
+				debit+=i.get('debit') or 0
+				credit+=i.get('credit') or 0
+				net+=i.get('net') or 0
 
-			total_debit +=i.get('debit') or 0
-			total_credit +=i.get('credit') or 0
-			total_net += i.get('net') or 0
-			if not row_check and i.get('debit')>0:
+				total_debit +=i.get('debit') or 0
+				total_credit +=i.get('credit') or 0
+				total_net += i.get('net') or 0
 
-				row_check = 1
-			data.append(i)
-		elif i == sample_data[-1]:
-			party = i.get('party')
-			i.update({'party':""})
+				data.append(i)
+				check = party
+				row_check = 0
+				# fees_invoice = frappe.db.sql('''select fees.name as voucher_no
+				# 						,fees.name as against_voucher,fy.name as fiscal_year
+				# 						from `tabFees` as fees left join `tabFiscal Year` as fy
+				# 						on fees.posting_date between fy.year_start_date and fy.year_end_date
+				# 						where fees.student = '{0}' and fees.posting_date 
+				# 						between '{1}' and '{2}' '''.format(party,start_date,end_date),as_dict=True)
+				# data.append({'party':"<b></b>"})
+				# data += fees_invoice
+				data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net})
+				data.append({'party':"<b>Total Result</b>",'debit':total_debit,'credit':total_credit,'net':total_net})
+				credit = 0
+				debit =0 
+				net = 0
+			else:
+				check = i.get('party')
+				row_check = 0
+				debit+=i.get('debit') or 0
+				credit+=i.get('credit') or 0
+				net+=i.get('net') or 0
 
-			debit+=i.get('debit') or 0
-			credit+=i.get('credit') or 0
-			net+=i.get('net') or 0
+				total_debit +=i.get('debit') or 0
+				total_credit +=i.get('credit') or 0
+				total_net += i.get('net') or 0
 
-			total_debit +=i.get('debit') or 0
-			total_credit +=i.get('credit') or 0
-			total_net += i.get('net') or 0
-
-			data.append(i)
-			check = party
-			row_check = 0
-			# fees_invoice = frappe.db.sql('''select fees.name as voucher_no
-			# 						,fees.name as against_voucher,fy.name as fiscal_year
-			# 						from `tabFees` as fees left join `tabFiscal Year` as fy
-			# 						on fees.posting_date between fy.year_start_date and fy.year_end_date
-			# 						where fees.student = '{0}' and fees.posting_date 
-			# 						between '{1}' and '{2}' '''.format(party,start_date,end_date),as_dict=True)
-			# data.append({'party':"<b></b>"})
-			# data += fees_invoice
-			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net})
-			data.append({'party':"<b>Total Result</b>",'debit':total_debit,'credit':total_credit,'net':total_net})
-			credit = 0
-			debit =0 
-			net = 0
-		else:
-			check = i.get('party')
-			row_check = 0
-			debit+=i.get('debit') or 0
-			credit+=i.get('credit') or 0
-			net+=i.get('net') or 0
-
-			total_debit +=i.get('debit') or 0
-			total_credit +=i.get('credit') or 0
-			total_net += i.get('net') or 0
-
-			# fees_invoice = frappe.db.sql('''select fees.name as voucher_no
-			# 			,fees.name as against_voucher,fy.name as fiscal_year
-			# 			from `tabFees` as fees left join `tabFiscal Year` as fy
-			# 			on fees.posting_date between fy.year_start_date and fy.year_end_date
-			# 			where fees.student = '{0}' and fees.posting_date 
-			# 			between '{1}' and '{2}' '''.format(i.get('party'),start_date,end_date),as_dict=True)
-			# data += fees_invoice
-			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net})
-			credit = 0
-			debit =0 
-			net = 0
-			data.append(i)
+				# fees_invoice = frappe.db.sql('''select fees.name as voucher_no
+				# 			,fees.name as against_voucher,fy.name as fiscal_year
+				# 			from `tabFees` as fees left join `tabFiscal Year` as fy
+				# 			on fees.posting_date between fy.year_start_date and fy.year_end_date
+				# 			where fees.student = '{0}' and fees.posting_date 
+				# 			between '{1}' and '{2}' '''.format(i.get('party'),start_date,end_date),as_dict=True)
+				# data += fees_invoice
+				data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net})
+				credit = 0
+				debit =0 
+				net = 0
+				data.append(i)
 	return data
 
 @frappe.whitelist()
