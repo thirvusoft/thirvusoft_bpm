@@ -170,7 +170,7 @@ def get_data(filters):
 	total_net = 0
 	row_check = 0
 	for i in sample_data:
-		if frappe.get_value('Fees',i.get('voucher_no'),'docstatus') != 2 and frappe.get_value('Fees',i.get('against_voucher'),'docstatus') != 2 :
+		if frappe.get_value(i.get('voucher_type'),i.get('voucher_no'),'docstatus') != 2 and frappe.get_value(i.get('against_voucher_type'),i.get('against_voucher'),'docstatus') != 2 :
 			if check == i.get('party') and i != sample_data[-1]:
 
 				if i != sample_data[0]:
