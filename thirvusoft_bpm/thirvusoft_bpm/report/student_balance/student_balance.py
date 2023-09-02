@@ -81,13 +81,19 @@ def get_columns(filters):
 			"fieldname": "credit",
 			"width": 145
 		},
+  		{
+			"label": _("Allocated Amt (Cr)"),
+			"fieldtype": "Currency",
+			"fieldname": "allocated_amount",
+			"width": 150
+		},
  		{
-			"label": _("(Cr) Unallocated Amt"),
+			"label": _("Unallocated Amt (Cr)"),
 			"fieldtype": "Currency",
 			"fieldname": "unallocated_amount",
 			"width": 150
 		},
-		{
+   		{
 			"label": _("Balance (Dr - Cr)"),
 			"fieldtype": "Currency",
 			"fieldname": "net",
@@ -130,17 +136,65 @@ def get_data(filters):
                                	gl.voucher_type,
                                 gl.voucher_no,
                                 gl.against_voucher_type,
-                                GROUP_CONCAT(DISTINCT gl.against_voucher SEPARATOR ', ') as against_voucher,
+                                (
+                                    select 
+                                    	GROUP_CONCAT(DISTINCT gl_gc.against_voucher SEPARATOR ', ')
+									from `tabGL Entry` gl_gc
+									WHERE 
+         								gl_gc.voucher_type = gl.voucher_type and
+										gl_gc.voucher_no = gl.voucher_no and
+										ifnull(gl_gc.voucher_no, '') != '' and
+										gl_gc.is_cancelled = 0 and
+										case 
+											when ifnull(gl_gc.against_voucher, '') != ''
+												then (
+													select 
+														agn_vchr.docstatus
+													from `tabFees` agn_vchr
+													where
+														agn_vchr.name = gl_gc.against_voucher
+													limit 1
+												) = 1 
+											else 1
+										end and
+										gl_gc.posting_date between '{1}' and '{2}' 
+										and {4}
+                                ) as against_voucher,
         						gl.fiscal_year,
               					DATE_FORMAT(convert(gl.posting_date, char),'%Y-%m-%d') as posting_date,
-                   				sum(gl.debit) as debit,
-                       			sum(case when ifnull(gl.against_voucher, '')!='' then gl.credit else 0 end) as credit,
-                          		(sum(gl.debit) - sum(gl.credit)) as net,
-								sum(case when ifnull(gl.against_voucher, '')='' then gl.credit else 0 end) as unallocated_amount
+                   				gl.debit as debit,
+                       			case when gl.voucher_type = 'Payment Entry'
+                          			then (
+										select sum(gl_vchr.credit)
+										from `tabGL Entry` gl_vchr
+										where
+											gl_vchr.is_cancelled = 0 and
+											gl_vchr.voucher_type=gl.voucher_type and
+											gl_vchr.voucher_no=gl.voucher_no and
+											case 
+												when ifnull(gl_vchr.against_voucher, '') != ''
+													then (
+														select 
+															agn_vchr.docstatus
+														from `tabFees` agn_vchr
+														where
+															agn_vchr.name = gl_vchr.against_voucher
+														limit 1
+													) = 1 
+												else 1
+											end and
+											gl_vchr.posting_date between '{1}' and '{2}' 
+											and {5}
+									) 
+         							else gl.credit
+                				end as credit,
+                          		(gl.debit - gl.credit) as net,
+								case when ifnull(gl.against_voucher, '')!='' then gl.credit else 0 end as allocated_amount,
+								case when ifnull(gl.against_voucher, '')='' then gl.credit else 0 end as unallocated_amount
                             from `tabGL Entry` as gl 
 							left join `tabStudent` as stud on stud.name = gl.party 
 							where 
-								gl.is_cancelled = 0 and
+       							gl.is_cancelled = 0 and
 								case 
         							when ifnull(gl.against_voucher, '') != ''
         								then (
@@ -155,20 +209,19 @@ def get_data(filters):
           						end and
        							gl.posting_date between '{1}' and '{2}' 
 								and {3}
-							group by gl.voucher_no
        						order by 
 								gl.party,
-								CASE
-									WHEN IFNULL(gl.debit, 0) != 0
-										THEN 0
-									ELSE 1
-								END,
+								case 
+									when gl.voucher_type = 'Fees'
+										then gl.voucher_no
+									else ifnull(gl.against_voucher, gl.voucher_no)
+               					end,
+								case when ifnull(gl.debit, 0) > 0 then 0 else 1 end,
 								gl.posting_date,
-								gl.debit,
-								gl.credit,
+							
 								gl.voucher_no
 								
-       '''.format(company,start_date,end_date,conditions),as_dict= True)
+       '''.format(company,start_date,end_date,conditions, conditions.replace('gl.', 'gl_gc.'), conditions.replace('gl.', 'gl_vchr.')),as_dict= True, debug=1)
 	# sample_data=[]
 	# a=[]
 	# a_debit, a_credit=[],[]
@@ -201,10 +254,12 @@ def get_data(filters):
 	credit = 0
 	net = 0
 	unallocated_amount = 0
+	allocated_amount = 0
 	total_debit = 0
 	total_credit = 0
 	total_net = 0
 	total_unallocated_amount = 0
+	total_allocated_amount = 0
 	row_check = 0
 	for i in sample_data:
 		if check == i.get('party') and i != sample_data[-1]:
@@ -216,11 +271,13 @@ def get_data(filters):
 			credit+=i.get('credit') or 0
 			net+=i.get('net') or 0
 			unallocated_amount+=i.get("unallocated_amount") or 0
+			allocated_amount += i.get("allocated_amount") or 0
 
 			total_debit +=i.get('debit') or 0
 			total_credit +=i.get('credit') or 0
 			total_net += i.get('net') or 0
 			total_unallocated_amount+=i.get('unallocated_amount') or 0
+			total_allocated_amount += i.get('allocated_amount') or 0
 			if not row_check and i.get('debit')>0:
 
 				row_check = 1
@@ -233,11 +290,13 @@ def get_data(filters):
 			credit+=i.get('credit') or 0
 			net+=i.get('net') or 0
 			unallocated_amount+=i.get("unallocated_amount") or 0
+			allocated_amount += i.get("allocated_amount") or 0
 
 			total_debit +=i.get('debit') or 0
 			total_credit +=i.get('credit') or 0
 			total_net += i.get('net') or 0
 			total_unallocated_amount+=i.get('unallocated_amount') or 0
+			total_allocated_amount += i.get('allocated_amount') or 0
 
 			data.append(i)
 			check = party
@@ -250,12 +309,13 @@ def get_data(filters):
 			# 						between '{1}' and '{2}' '''.format(party,start_date,end_date),as_dict=True)
 			# data.append({'party':"<b></b>"})
 			# data += fees_invoice
-			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount})
-			data.append({'party':"<b>Total Result</b>",'debit':total_debit,'credit':total_credit,'net':total_net, 'unallocated_amount': total_unallocated_amount})
+			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
+			data.append({'party':"<b>Total Result</b>",'debit':total_debit,'credit':total_credit,'net':total_net, 'unallocated_amount': total_unallocated_amount, 'allocated_amount': total_allocated_amount})
 			credit = 0
 			debit =0 
 			net = 0
 			unallocated_amount=0
+			allocated_amount=0
 		else:
 			check = i.get('party')
 			row_check = 0
@@ -267,6 +327,7 @@ def get_data(filters):
 			total_credit +=i.get('credit') or 0
 			total_net += i.get('net') or 0
 			total_unallocated_amount+=i.get('unallocated_amount') or 0
+			total_allocated_amount += i.get('allocated_amount') or 0
 
 			# fees_invoice = frappe.db.sql('''select fees.name as voucher_no
 			# 			,fees.name as against_voucher,fy.name as fiscal_year
@@ -275,11 +336,12 @@ def get_data(filters):
 			# 			where fees.student = '{0}' and fees.posting_date 
 			# 			between '{1}' and '{2}' '''.format(i.get('party'),start_date,end_date),as_dict=True)
 			# data += fees_invoice
-			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount})
+			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
 			credit = i.get('credit') or 0
 			unallocated_amount=i.get("unallocated_amount") or 0
 			debit =i.get('debit')  or 0
 			net = i.get('net') or 0
+			allocated_amount=0
 			data.append(i)
 	return data
 
