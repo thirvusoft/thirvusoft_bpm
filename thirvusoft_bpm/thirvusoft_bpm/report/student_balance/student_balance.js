@@ -74,5 +74,36 @@ frappe.query_reports["Student Balance"] = {
 			"fieldtype": "Link",
 			"options": "Student"
 		},
-	]
+	],
+	onload: function (report) {
+		report.page.add_inner_button(__("Bulk Payment Request"), function () {
+			const selected_docs = [];
+			const list_of_docs = [];
+			if(frappe.query_report.data){
+			frappe.confirm(__("Do you want to Trigger Bulk Payment Request?"),
+			function() {
+				
+				frappe.call({
+                    method:"thirvusoft_bpm.thirvusoft_bpm.custom.py.report.trigger_bulk_message",
+                    args:{
+						'list_of_docs':frappe.query_report.data
+					},
+					callback:function(frm){
+                        // frappe.show_alert({message:__('Payment Request Created Successfully'), indicator:'green'});
+                    }
+                })
+			
+
+			},
+			function() {
+                console.log("Operation Aborted")
+            }
+			);
+		}			
+		else{
+			frappe.msgprint("No Data Available")
+		}
+
+	})
+	}
 };
