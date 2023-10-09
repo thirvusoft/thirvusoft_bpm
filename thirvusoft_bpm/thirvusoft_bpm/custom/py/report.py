@@ -20,8 +20,8 @@ def trigger_bulk_message(list_of_docs):
 				result.append(i)
 		idx += 1
 
-	create_payment_request(result)
-	# frappe.enqueue(create_payment_request, list_of_docs = list_of_docs)
+	# create_payment_request(result)
+	frappe.enqueue(create_payment_request, list_of_docs = result)
 	frappe.msgprint("Payment Request Will Be Creating In Backgroud Within 20 Minutes.")
 
 	
