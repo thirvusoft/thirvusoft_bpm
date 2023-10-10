@@ -3,6 +3,7 @@ import json
 from erpnext.accounts.doctype.payment_request.payment_request import get_gateway_details,get_amount
 from erpnext.accounts.party import get_party_account, get_party_bank_account
 from frappe import _
+from erpnext.accounts.doctype.payment_request.payment_request import make_payment_request
 
 @frappe.whitelist()
 
@@ -46,7 +47,12 @@ def create_payment_request(list_of_docs=None):
 			student = frappe.get_doc("Student",fees.get('student'))
 			if (student and student.student_email_id and fees.get('student')):
 				doc= frappe.new_doc("Payment Request")
-				doc.update(make_payment_request(party_type= "Student",party= fees.get('student'),recipient_id= student.student_email_id))
+				fees_doc = frappe.get_list("Fees",{'student':fees.get('student'),'outstanding_amount':['>',0]},order_by='creation')
+				if fees_doc:
+					fees_doc = fees_doc[0]
+				else:
+					fees_doc = None
+				doc.update(make_payment_request(dt="Fees",dn=fees_doc.name,party_type= "Student",party= fees.get('student'),recipient_id= student.student_email_id))
 				doc.mode_of_payment = 'Gateway'
 				doc.payment_request_type = 'Inward'
 				doc.print_format = frappe.db.get_value(
@@ -67,75 +73,96 @@ def create_payment_request(list_of_docs=None):
 				
 	return True
 
-@frappe.whitelist(allow_guest=True)
-def make_payment_request(**args):
-	"""Make payment request"""
+# @frappe.whitelist(allow_guest=True)
+# def make_payment_request(**args):
+# 	"""Make payment request"""
 
-	args = frappe._dict(args)
+# 	args = frappe._dict(args)
 
+# 	ref_doc = frappe.get_doc(args.dt, args.dn)
+# 	gateway_account = get_gateway_details(args) or frappe._dict()
 
-	gateway_account = get_gateway_details(args) or frappe._dict()
+# 	grand_total = get_amount(ref_doc, gateway_account.get("payment_account"))
+# 	if args.loyalty_points and args.dt == "Sales Order":
+# 		from erpnext.accounts.doctype.loyalty_program.loyalty_program import validate_loyalty_points
 
-	
-	bank_account = (
-		get_party_bank_account(args.get("party_type"), args.get("party"))
-		if args.get("party_type")
-		else ""
-	)
+# 		loyalty_amount = validate_loyalty_points(ref_doc, int(args.loyalty_points))
+# 		frappe.db.set_value(
+# 			"Sales Order", args.dn, "loyalty_points", int(args.loyalty_points), update_modified=False
+# 		)
+# 		frappe.db.set_value(
+# 			"Sales Order", args.dn, "loyalty_amount", loyalty_amount, update_modified=False
+# 		)
+# 		grand_total = grand_total - loyalty_amount
 
-	draft_payment_request = frappe.db.get_value(
-		"Payment Request",
-		{"reference_doctype": args.dt, "reference_name": args.dn, "docstatus": 0},
-	)
+# 	bank_account = (
+# 		get_party_bank_account(args.get("party_type"), args.get("party"))
+# 		if args.get("party_type")
+# 		else ""
+# 	)
 
+# 	existing_payment_request = None
+# 	if args.order_type == "Shopping Cart":
+# 		existing_payment_request = frappe.db.get_value(
+# 			"Payment Request",
+# 			{"reference_doctype": args.dt, "reference_name": args.dn, "docstatus": ("!=", 2)},
+# 		)
 
-	if draft_payment_request:
-		frappe.db.set_value(
-			"Payment Request", draft_payment_request, "grand_total", grand_total, update_modified=False
-		)
-		pr = frappe.get_doc("Payment Request", draft_payment_request)
-	else:
-		pr = frappe.new_doc("Payment Request")
-		pr.update(
-			{
-				"payment_gateway_account": gateway_account.get("name"),
-				"payment_gateway": gateway_account.get("payment_gateway"),
-				"payment_account": gateway_account.get("payment_account"),
-				"payment_channel": gateway_account.get("payment_channel"),
-				"payment_request_type": args.get("payment_request_type"),
-				"mode_of_payment": args.mode_of_payment,
-				"email_to": args.recipient_id ,
-				"subject": _("Payment Request for {0}").format(args.dn),
-				"message": gateway_account.get("message"),
-				"party_type": args.get("party_type") or "Customer",
-				"party": args.get("party"),
-				"bank_account": bank_account,
-			}
-		)
-		# customization by thirvusoft
-		if args.dt== "Fees":
-			pr.update(
-			{
-				"grand_total": net_payable,
-			}
-		)
+# 	if existing_payment_request:
+# 		frappe.db.set_value(
+# 			"Payment Request", existing_payment_request, "grand_total", grand_total, update_modified=False
+# 		)
+# 		pr = frappe.get_doc("Payment Request", existing_payment_request)
+# 	else:
+# 		if args.order_type != "Shopping Cart":
+# 			existing_payment_request_amount = get_existing_payment_request_amount(args.dt, args.dn)
 
+# 			if existing_payment_request_amount:
+# 				grand_total -= existing_payment_request_amount
 
+# 		pr = frappe.new_doc("Payment Request")
+# 		pr.update(
+# 			{
+# 				"payment_gateway_account": gateway_account.get("name"),
+# 				"payment_gateway": gateway_account.get("payment_gateway"),
+# 				"payment_account": gateway_account.get("payment_account"),
+# 				"payment_channel": gateway_account.get("payment_channel"),
+# 				"payment_request_type": args.get("payment_request_type"),
+# 				"currency": ref_doc.currency,
+# 				"grand_total": grand_total,
+# 				"mode_of_payment": args.mode_of_payment,
+# 				"email_to": args.recipient_id or ref_doc.owner,
+# 				"subject": _("Payment Request for {0}").format(args.dn),
+# 				"message": gateway_account.get("message") or get_dummy_message(ref_doc),
+# 				"reference_doctype": args.dt,
+# 				"reference_name": args.dn,
+# 				"party_type": args.get("party_type") or "Customer",
+# 				"party": args.get("party") or ref_doc.get("customer"),
+# 				"bank_account": bank_account,
+# 			}
+# 		)
+# 		# customization by thirvusoft
+# 		if args.dt== "Fees":
+# 			net_payable=frappe.get_value("Fees",args.dn,"net_payable")
+# 			pr.update(
+# 			{
+# 				"grand_total": net_payable,
+# 			}
+# 		)
 
+# 		if args.order_type == "Shopping Cart" or args.mute_email:
+# 			pr.flags.mute_email = True
 
-		if args.order_type == "Shopping Cart" or args.mute_email:
-			pr.flags.mute_email = True
+# 		if args.submit_doc:
+# 			pr.insert(ignore_permissions=True)
+# 			pr.submit()
 
-		if args.submit_doc:
-			pr.insert(ignore_permissions=True)
-			pr.submit()
+# 	if args.order_type == "Shopping Cart":
+# 		frappe.db.commit()
+# 		frappe.local.response["type"] = "redirect"
+# 		frappe.local.response["location"] = pr.get_payment_url()
 
-	if args.order_type == "Shopping Cart":
-		frappe.db.commit()
-		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = pr.get_payment_url()
+# 	if args.return_doc:
+# 		return pr
 
-	if args.return_doc:
-		return pr
-
-	return pr.as_dict()
+# 	return pr.as_dict()
