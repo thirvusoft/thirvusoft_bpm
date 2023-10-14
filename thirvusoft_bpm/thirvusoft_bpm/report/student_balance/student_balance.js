@@ -74,6 +74,11 @@ frappe.query_reports["Student Balance"] = {
 			"fieldtype": "Link",
 			"options": "Student"
 		},
+		{
+			"fieldname": "threshold amount",
+			"label": __("Threshold Amount"),
+			"fieldtype": "Currency"
+		},
 	],
 	onload: function (report) {
 		report.page.add_inner_button(__("Bulk Payment Request"), function () {

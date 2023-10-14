@@ -107,6 +107,10 @@ def get_data(filters):
 	data = []
 	conditions = ' gl.docstatus = 1 and gl.party_type = "Student"'
 
+	if filters.get('threshold_amount'):
+		threshold_amount = filters.get('threshold_amount')
+		conditions += f' and net = 56'
+
 	if filters.get('company'):
 		company = filters.get('company')
 		conditions += f' and gl.company = "{company}"'
