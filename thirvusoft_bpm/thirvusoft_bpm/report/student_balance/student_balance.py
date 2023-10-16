@@ -109,7 +109,7 @@ def get_data(filters):
 
 	if filters.get('threshold_amount'):
 		threshold_amount = filters.get('threshold_amount')
-		conditions += f' and net = 56'
+		conditions += f' and (gl.debit - gl.credit) >= {threshold_amount}'
 
 	if filters.get('company'):
 		company = filters.get('company')

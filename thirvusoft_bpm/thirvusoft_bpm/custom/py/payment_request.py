@@ -41,6 +41,9 @@ def get_advance_entries(doc,event):
         #Non Payment Message
         if doc.grand_total <= 0 and doc.payment_gateway_account:
             doc.message = frappe.db.get_value('Payment Gateway Account',doc.payment_gateway_account,'non_payment_message')
+        elif doc.bulk_transaction:
+            doc.message = frappe.db.get_value('Payment Gateway Account',doc.payment_gateway_account,'default_message_for_bulk_payment_remainder')
+
 
 def background_submit(doc,event):
     global submit

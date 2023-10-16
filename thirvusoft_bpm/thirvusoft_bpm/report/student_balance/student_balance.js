@@ -75,23 +75,33 @@ frappe.query_reports["Student Balance"] = {
 			"options": "Student"
 		},
 		{
-			"fieldname": "threshold amount",
+			"fieldname": "threshold_amount",
 			"label": __("Threshold Amount"),
 			"fieldtype": "Currency"
 		},
 	],
 	onload: function (report) {
-		report.page.add_inner_button(__("Bulk Payment Request"), function () {
-			const selected_docs = [];
-			const list_of_docs = [];
+		report.page.add_inner_button(__("Bulk Payment Request"), async function () {
+
 			if(frappe.query_report.data){
+			let filters  = [];
+			const dic = { };
+
+			await frappe.query_report.filters.forEach(element => {
+				
+				dic[element.fieldname] = element.value
+				
+			});
+			filters.push(dic)
+			console.log(filters)
 			frappe.confirm(__("Do you want to Trigger Bulk Payment Request?"),
 			function() {
 				
 				frappe.call({
                     method:"thirvusoft_bpm.thirvusoft_bpm.custom.py.report.trigger_bulk_message",
                     args:{
-						'list_of_docs':frappe.query_report.data
+						'list_of_docs':frappe.query_report.data,
+						'filters':filters
 					},
 					callback:function(frm){
                         // frappe.show_alert({message:__('Payment Request Created Successfully'), indicator:'green'});
