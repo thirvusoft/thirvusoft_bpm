@@ -16,10 +16,10 @@ from frappe.utils import (
 
 @frappe.whitelist()
 def trigger_bulk_message(list_of_docs,filters):
+	
 	filters = json.loads(filters)
 	result = []
-	frappe.msgprint("Payment Request Will Be Creating In Backgroud Within 30 Minutes.")
-	frappe.enqueue(create_list, list_of_docs = list_of_docs,result = result,filters=filters)
+	frappe.enqueue(create_list, list_of_docs = list_of_docs,result = result,filters=filters,queue="long")
 
 def create_list(list_of_docs,result,filters):
 	list_of_docs = json.loads(list_of_docs)
@@ -50,18 +50,24 @@ def create_payment_request(list_of_docs=None,filters=None):
 					'outstanding_amount':fees.get('net')
 				})
 				idx += 1
-				new_transaction.save()
+				if not new_transaction.name:
+					new_transaction.save()
 				update_dict.update({fees_doc.get('name'):new_transaction.name})
 
+		new_transaction.save()
 		
 		# get_report_content(filters,new_transaction)	
 
 	if list_of_docs:
 		for fees in list_of_docs:
 			student = frappe.get_doc("Student",fees.get('student'))
-			if (student and student.student_email_id and fees.get('student')):
+			if fees.get('name'):
+				fee_doc = frappe.get_doc("Fees",fees.get('name'))
+			else:
+				fee_doc = None
+			if (student and fee_doc and fee_doc.student_email and fees.get('student')):
 				doc= frappe.new_doc("Payment Request")
-				doc.update(make_payment_request(dt="Fees",dn=fees.get('name'),party_type= "Student",party= fees.get('student'),recipient_id= student.student_email_id))
+				doc.update(make_payment_request(dt="Fees",dn=fees.get('name'),party_type= "Student",party= fees.get('student'),recipient_id= fee_doc.student_email))
 				doc.mode_of_payment = 'Gateway'
 				doc.payment_request_type = 'Inward'
 				doc.print_format = frappe.db.get_value(
@@ -75,7 +81,7 @@ def create_payment_request(list_of_docs=None,filters=None):
 
 				frappe.db.set_value('Bulk Transaction Log Table',{'parent':update_dict[fees.get('name')],'parentfield': "bulk_transaction_log_table",'fees':fees.get('name')},'status','Completed')
 				name = frappe.get_doc('Bulk Transaction Log',new_transaction.name)
-				name.save()
+				name.db_update()
 
 	return True
 

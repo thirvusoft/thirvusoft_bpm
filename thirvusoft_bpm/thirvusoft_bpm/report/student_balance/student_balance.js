@@ -92,17 +92,17 @@ frappe.query_reports["Student Balance"] = {
 			if(frappe.query_report.data){
 			let filters  = [];
 			const dic = { };
-
 			await frappe.query_report.filters.forEach(element => {
 				
 				dic[element.fieldname] = element.value
 				
 			});
 			filters.push(dic)
-			console.log(filters)
+
 			frappe.confirm(__("Do you want to Trigger Bulk Payment Request?"),
-			function() {
-				
+			async function() {
+				await frappe.msgprint("Payment Request Will Be Creating In Backgroud Within 30 Minutes.")
+
 				frappe.call({
                     method:"thirvusoft_bpm.thirvusoft_bpm.custom.py.report.trigger_bulk_message",
                     args:{

@@ -72,6 +72,8 @@ def update_advance_payments(name):
 
 def previous_outstanding_amount(doc,event):
     filters = {'student':doc.student,'outstanding_amount':['!=',0],'docstatus':1}
+    filters_db = f"gl.company = '{doc.company}' and gl.party = '{doc.student}' "
+
     allow_outstanding = True
     if frappe.db.get_value("Company",doc.company,'annual_fees_category'):
         for cat in doc.components:
@@ -82,9 +84,19 @@ def previous_outstanding_amount(doc,event):
         filters.update({'name':['!=',doc.name]})
     if doc.company and frappe.db.get_value("Company",doc.company,'outstanding_receivable_account'):
         filters.update({'receivable_account':['=',frappe.db.get_value("Company",doc.company,'outstanding_receivable_account')]})
-    sum = frappe.get_all('Fees',filters,['sum(outstanding_amount) as sum'])
+        filters_db  += f" and gl.account = '{frappe.db.get_value('Company',doc.company,'outstanding_receivable_account')}' "
+
+    # sum = frappe.get_all('Fees',filters,['sum(outstanding_amount) as sum'])
+    # Credit Debit from GL
+    sum  = frappe.db.sql(f'''
+        select sum(gl.debit) as debit, sum(gl.credit) as credit
+        from `tabGL Entry` as gl where {filters_db} 
+    ''',as_dict=1)
+
+
+
     if allow_outstanding:
-        doc.previous_outstanding_amount = sum[0].get('sum') if sum else 0
+        doc.previous_outstanding_amount = (sum[0].get('debit') - sum[0].get('credit')) if sum else 0
     else:
         doc.previous_outstanding_amount  = 0
     doc.net_total = doc.grand_total
