@@ -75,6 +75,12 @@ frappe.query_reports["Student Balance"] = {
 			"options": "Student"
 		},
 		{
+			"fieldname": "program",
+			"label": __("Program"),
+			"fieldtype": "Link",
+			"options": "Program"
+		},
+		{
 			"fieldname": "threshold_amount",
 			"label": __("Threshold Amount"),
 			"fieldtype": "Currency"

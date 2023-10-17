@@ -105,7 +105,21 @@ def get_columns(filters):
 
 def get_data(filters):
 	data = []
-	conditions = ' gl.docstatus = 1 and gl.party_type = "Student"'
+	conditions = ''' gl.docstatus = 1 and gl.party_type = "Student"
+	 and case
+        when coalesce(gl.against_voucher, '') != '' then (
+            select
+                agn_vchr.outstanding_amount
+            from
+                `tabFees` agn_vchr
+            where
+                agn_vchr.name = gl.against_voucher
+            limit
+                1
+        ) != 0
+        else 1
+    end
+ 	'''
 
 	if filters.get('threshold_amount'):
 		threshold_amount = filters.get('threshold_amount')
@@ -125,6 +139,18 @@ def get_data(filters):
 		account = filters.get('account') 
 		conditions += f' and gl.account = "{account}"'
 
+	if filters.get('program'):
+		program = filters.get('program')
+		conditions += f''' and ifnull(gl.against_voucher, '') != '' and 
+  								(
+									select 
+										agn_vchr.program
+									from `tabFees` agn_vchr
+									where
+										agn_vchr.name = gl.against_voucher
+									limit 1
+								) = '{program}' '''
+  
 	if filters.get('student'):
 		student = filters.get('student')
 		conditions += f' and gl.party = "{student}"'
