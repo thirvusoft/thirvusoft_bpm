@@ -46,14 +46,15 @@ def create_payment_request(list_of_docs=None,filters=None):
 				new_transaction.append('bulk_transaction_log_table',{
 					'student':fees.get('student'),
 					'status':"Pending",
-					'fees':fees_doc.get('name')
+					'fees':fees_doc.get('name'),
+					'outstanding_amount':fees.get('net')
 				})
 				idx += 1
 				new_transaction.save()
 				update_dict.update({fees_doc.get('name'):new_transaction.name})
 
 		
-		get_report_content(filters,new_transaction)	
+		# get_report_content(filters,new_transaction)	
 
 	if list_of_docs:
 		for fees in list_of_docs:
@@ -71,7 +72,6 @@ def create_payment_request(list_of_docs=None,filters=None):
 				doc.bulk_transaction = 1
 				doc.grand_total =  fees.get('net')
 				doc.save()
-				frappe.log_error(title='s',message=update_dict[fees.get('name')])
 
 				frappe.db.set_value('Bulk Transaction Log Table',{'parent':update_dict[fees.get('name')],'parentfield': "bulk_transaction_log_table",'fees':fees.get('name')},'status','Completed')
 				name = frappe.get_doc('Bulk Transaction Log',new_transaction.name)
