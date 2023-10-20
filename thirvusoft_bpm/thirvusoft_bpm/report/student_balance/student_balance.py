@@ -340,7 +340,7 @@ def get_data(filters):
 			# 						between '{1}' and '{2}' '''.format(party,start_date,end_date),as_dict=True)
 			# data.append({'party':"<b></b>"})
 			# data += fees_invoice
-			if net >= threshold_amount:
+			if net >= threshold_amount or threshold_amount <= 0:
 				data  += row_app
 				data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
 				data.append({'party':"<b>Total Result</b>",'debit':total_debit,'credit':total_credit,'net':total_net, 'unallocated_amount': total_unallocated_amount, 'allocated_amount': total_allocated_amount})
@@ -372,7 +372,7 @@ def get_data(filters):
 			# 			where fees.student = '{0}' and fees.posting_date 
 			# 			between '{1}' and '{2}' '''.format(i.get('party'),start_date,end_date),as_dict=True)
 			# data += fees_invoice
-			if net >= threshold_amount:
+			if net >= threshold_amount or threshold_amount <= 0:
 				data  += row_app
 				data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
 				row_app = []
