@@ -120,10 +120,10 @@ def get_data(filters):
         else 1
     end
  	'''
-
+	threshold_amount =0
 	if filters.get('threshold_amount'):
 		threshold_amount = filters.get('threshold_amount')
-		conditions += f' and (gl.debit - gl.credit) >= {threshold_amount}'
+	# 	conditions += f' and (gl.debit - gl.credit) >= {threshold_amount}'
 
 	if filters.get('company'):
 		company = filters.get('company')
@@ -291,6 +291,7 @@ def get_data(filters):
 	total_unallocated_amount = 0
 	total_allocated_amount = 0
 	row_check = 0
+	row_app = []
 	for i in sample_data:
 		if check == i.get('party') and i != sample_data[-1]:
 		
@@ -311,7 +312,7 @@ def get_data(filters):
 			if not row_check and i.get('debit')>0:
 
 				row_check = 1
-			data.append(i)
+			row_app.append(i)
 		elif i == sample_data[-1]:
 			party = i.get('party')
 			i.update({'party':""})
@@ -328,7 +329,7 @@ def get_data(filters):
 			total_unallocated_amount+=i.get('unallocated_amount') or 0
 			total_allocated_amount += i.get('allocated_amount') or 0
 
-			data.append(i)
+			row_app.append(i)
 			check = party
 			row_check = 0
 			# fees_invoice = frappe.db.sql('''select fees.name as voucher_no
@@ -339,8 +340,13 @@ def get_data(filters):
 			# 						between '{1}' and '{2}' '''.format(party,start_date,end_date),as_dict=True)
 			# data.append({'party':"<b></b>"})
 			# data += fees_invoice
-			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
-			data.append({'party':"<b>Total Result</b>",'debit':total_debit,'credit':total_credit,'net':total_net, 'unallocated_amount': total_unallocated_amount, 'allocated_amount': total_allocated_amount})
+			if net >= threshold_amount:
+				data  += row_app
+				data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
+				data.append({'party':"<b>Total Result</b>",'debit':total_debit,'credit':total_credit,'net':total_net, 'unallocated_amount': total_unallocated_amount, 'allocated_amount': total_allocated_amount})
+				row_app = []
+			else:
+				row_app = []
 			credit = 0
 			debit =0 
 			net = 0
@@ -366,13 +372,19 @@ def get_data(filters):
 			# 			where fees.student = '{0}' and fees.posting_date 
 			# 			between '{1}' and '{2}' '''.format(i.get('party'),start_date,end_date),as_dict=True)
 			# data += fees_invoice
-			data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
+			if net >= threshold_amount:
+				data  += row_app
+				data.append({'party':"<b>Result</b>",'debit':debit,'credit':credit,'net':net, 'unallocated_amount': unallocated_amount, 'allocated_amount':allocated_amount})
+				row_app = []
+			else:
+				row_app = []
 			credit = i.get('credit') or 0
 			unallocated_amount=i.get("unallocated_amount") or 0
 			debit =i.get('debit')  or 0
 			net = i.get('net') or 0
 			allocated_amount=0
-			data.append(i)
+			row_app.append(i)
+
 	return data
 
 @frappe.whitelist()
