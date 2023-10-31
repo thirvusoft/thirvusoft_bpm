@@ -6,6 +6,9 @@ from frappe import _
 
 
 def execute(filters=None):
+	frappe.publish_realtime(
+				"empty_students", user=frappe.session.user
+			)
 	columns, data = get_columns(filters), get_data(filters)
 	return columns, data
 
@@ -100,7 +103,14 @@ def get_columns(filters):
 			"width": 130
 		},
 	]
-	
+	if 	filters.get('type') == "Selected Students":
+		columns = [{
+			"label": _("Select"),
+			"fieldtype": "Data",
+			"fieldname": "checkbox",
+			"width": 100,
+			# ''
+		}]+columns
 	return columns
 
 def get_data(filters):
@@ -162,6 +172,7 @@ def get_data(filters):
 	sample_data = frappe.db.sql('''
                             select 
                             	gl.party as party,
+								gl.party as party1,
                               	stud.first_name as party_name,
                                	gl.voucher_type,
                                 gl.voucher_no,
@@ -297,6 +308,9 @@ def get_data(filters):
 		
 			if i != sample_data[0]:
 				i.update({'party':""})
+			else:
+				str = "'"+i.party+"'"
+				i.update({'checkbox': f'''<input type='checkbox' onclick=get_check(event,{str}) id='{i.party}' name='{i.party}'>'''})
 
 			debit+=i.get('debit') or 0
 			credit+=i.get('credit') or 0
@@ -315,8 +329,12 @@ def get_data(filters):
 			row_app.append(i)
 		elif i == sample_data[-1]:
 			party = i.get('party')
-			i.update({'party':""})
-
+			if i != sample_data[0]:
+				i.update({'party':""})
+			else:
+				str = "'"+i.party+"'"
+				i.update({'checkbox': f"<input type='checkbox' onclick=get_check(event,{str}) id='{i.party}' name='{i.party}'>"})
+		
 			debit+=i.get('debit') or 0
 			credit+=i.get('credit') or 0
 			net+=i.get('net') or 0
@@ -383,6 +401,9 @@ def get_data(filters):
 			debit =i.get('debit')  or 0
 			net = i.get('net') or 0
 			allocated_amount=0
+			str = "'"+i.party+"'"
+
+			i.update({'checkbox': f"<input type='checkbox' onclick=get_check(event,{str}) id='{i.party}' name='{i.party}'>"})
 			row_app.append(i)
 
 	return data

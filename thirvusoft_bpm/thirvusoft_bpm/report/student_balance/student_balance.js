@@ -85,6 +85,14 @@ frappe.query_reports["Student Balance"] = {
 			"label": __("Threshold Amount"),
 			"fieldtype": "Currency"
 		},
+		{
+			"fieldname": "type",
+			"label": __("Select Type"),
+			"options": "All Students\nSelected Students",
+			"fieldtype": "Select",
+			'default':'All Students'
+
+		},
 	],
 	onload: function (report) {
 		report.page.add_inner_button(__("Bulk Payment Request"), async function () {
@@ -107,6 +115,7 @@ frappe.query_reports["Student Balance"] = {
                     method:"thirvusoft_bpm.thirvusoft_bpm.custom.py.report.trigger_bulk_message",
                     args:{
 						'list_of_docs':frappe.query_report.data,
+						'students':frappe.query_report.students,
 						'filters':filters
 					},
 					callback:function(frm){
@@ -126,5 +135,24 @@ frappe.query_reports["Student Balance"] = {
 		}
 
 	})
-	}
+	},
 };
+
+function get_check(event, party) {
+    if (event.target.checked == true) {
+        if (!frappe.query_report.students) {
+            frappe.query_report.students = [party];
+        } else {
+            frappe.query_report.students.push(party);
+        }
+    } else {
+        if (frappe.query_report.students) {
+            frappe.query_report.students = frappe.query_report.students.filter(item => item !== party);
+        }
+    }
+}
+
+frappe.realtime.on("empty_students", function(data) {
+	frappe.query_report.students=[]
+
+});
