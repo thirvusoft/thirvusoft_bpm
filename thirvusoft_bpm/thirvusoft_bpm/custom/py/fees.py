@@ -72,7 +72,7 @@ def update_advance_payments(name):
 
 def previous_outstanding_amount(doc,event):
     filters = {'student':doc.student,'outstanding_amount':['!=',0],'docstatus':1}
-    filters_db = f"gl.company = '{doc.company}' and gl.party = '{doc.student}' "
+    filters_db = f"gl.company = '{doc.company}' and gl.party = '{doc.student}' and gl.is_cancelled != 1 "
 
     allow_outstanding = True
     if frappe.db.get_value("Company",doc.company,'annual_fees_category'):
@@ -82,6 +82,7 @@ def previous_outstanding_amount(doc,event):
                 break
     if doc.name:
         filters.update({'name':['!=',doc.name]})
+        filters_db += f" and gl.voucher_no != '{doc.name}'"
     if doc.company and frappe.db.get_value("Company",doc.company,'outstanding_receivable_account'):
         filters.update({'receivable_account':['=',frappe.db.get_value("Company",doc.company,'outstanding_receivable_account')]})
         filters_db  += f" and gl.account = '{frappe.db.get_value('Company',doc.company,'outstanding_receivable_account')}' "
