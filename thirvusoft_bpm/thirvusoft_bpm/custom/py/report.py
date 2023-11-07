@@ -15,18 +15,18 @@ from frappe.utils import (
 )
 
 @frappe.whitelist()
-def trigger_bulk_message(list_of_docs,filters):
-	
+def trigger_bulk_message(list_of_docs,students,filters):
 	filters = json.loads(filters)
 	result = []
-	frappe.enqueue(create_list, list_of_docs = list_of_docs,result = result,filters=filters,queue="long")
+	frappe.enqueue(create_list, list_of_docs = list_of_docs,result = result,filters=filters,students=students,queue="long")
 
-def create_list(list_of_docs,result,filters):
+def create_list(list_of_docs,result,filters,students):
 	list_of_docs = json.loads(list_of_docs)
+	students = json.loads(students)
 	idx = 0
 	list_of_docs = [d for d in list_of_docs if d.get("party")]
 	for i in list_of_docs:
-		if i.get('party') == "<b>Result</b>" and i.get('net') > 0:
+		if i.get('party') == "<b>Result</b>" and (list_of_docs[idx-1].get('party') in students or filters[0].get('type') != 'Selected Students') and i.get('net') > 0 :
 				row = i
 				row.update({'student':list_of_docs[idx-1].get('party')})
 				result.append(i)
