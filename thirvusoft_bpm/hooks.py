@@ -113,7 +113,7 @@ doc_events = {
 	},
     "Fees": {
 		"validate": "thirvusoft_bpm.thirvusoft_bpm.custom.py.fees.previous_outstanding_amount",
-		# "on_change": "thirvusoft_bpm.thirvusoft_bpm.custom.py.fees.previous_outstanding_amount",
+		"on_change": "thirvusoft_bpm.thirvusoft_bpm.custom.py.fees.previous_outstanding_amount",
 
 
 	},
