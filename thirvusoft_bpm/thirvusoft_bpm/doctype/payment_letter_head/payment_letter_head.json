@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-11-20 10:56:44.209459",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "party_type",
+  "letter_head"
+ ],
+ "fields": [
+  {
+   "fieldname": "letter_head",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Letter Head",
+   "options": "Letter Head",
+   "reqd": 1
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Party Type",
+   "options": "Customer\nDonor\nEmployee\nMember\nShareholder\nStudent\nSupplier",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-11-20 11:05:15.079945",
+ "modified_by": "Administrator",
+ "module": "Thirvusoft Bpm",
+ "name": "Payment Letter Head",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

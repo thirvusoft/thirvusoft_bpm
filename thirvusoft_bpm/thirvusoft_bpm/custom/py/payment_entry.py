@@ -19,6 +19,9 @@ class CustomPayment(PaymentEntry):
         # 	if not self.reference_no or not self.reference_date:
         # 		frappe.throw(_("Reference No and Reference Date is mandatory for Bank transaction"))
 
+def update_letter_head(doc,event):
+    doc.letter_head = frappe.get_value('Payment Letter Head',{'parent':doc.company,'party_type':doc.party_type},'letter_head')
+    
 @frappe.whitelist()
 def send_message_confirmation(doc,event):
     for ref in doc.references:

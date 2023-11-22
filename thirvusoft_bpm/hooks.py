@@ -124,6 +124,8 @@ doc_events = {
 	},
     "Payment Entry": {
 		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.send_message_confirmation",
+		"validate":"thirvusoft_bpm.thirvusoft_bpm.custom.py.payment_entry.update_letter_head"
+
 	},
 	"Purchase Order": {
 		"on_submit": "thirvusoft_bpm.thirvusoft_bpm.custom.py.purchase_order.send_purchase_msg",
