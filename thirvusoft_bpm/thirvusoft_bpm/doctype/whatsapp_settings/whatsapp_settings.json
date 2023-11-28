@@ -101,13 +101,14 @@
   {
    "fieldname": "url",
    "fieldtype": "Data",
-   "label": "URl"
+   "label": "URl",
+   "mandatory_depends_on": "eval:doc.enable"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-11-27 18:08:55.470882",
+ "modified": "2023-11-28 10:10:07.054545",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Whatsapp Settings",
