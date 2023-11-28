@@ -85,7 +85,7 @@ def whatsapp_message(doc):
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
                     api_url = frappe.db.get_single_value('Whatsapp Settings','url')
-                    url = f'{api_url}send?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                    url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     response = requests.request("GET", url, headers=headers, data=payload)
@@ -94,7 +94,6 @@ def whatsapp_message(doc):
                     log_doc = frappe.new_doc("Whatsapp Log")
                     log_doc.update({
                         "mobile_no": mobile_number,
-                        
                         "status":"Success",
                         "payload": f"{url}",
                         "response" : response,
@@ -110,8 +109,7 @@ def whatsapp_message(doc):
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
                     api_url = frappe.db.get_single_value('Whatsapp Settings','url')
-
-                    url = f'{api_url}send?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                    url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     log_doc = frappe.new_doc("Whatsapp Log")
