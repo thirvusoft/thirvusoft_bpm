@@ -99,6 +99,7 @@
    "label": "Enable Message for Payment Entry"
   },
   {
+   "depends_on": "eval:doc.enable",
    "fieldname": "url",
    "fieldtype": "Data",
    "label": "URl",
@@ -108,7 +109,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-11-28 10:10:07.054545",
+ "modified": "2023-11-28 15:52:05.238983",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Whatsapp Settings",
