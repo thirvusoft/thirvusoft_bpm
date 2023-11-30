@@ -41,7 +41,7 @@ def send_purchase_msg(doc,event):
             pdf_bytes = frappe.get_print(doc.doctype, doc.name, doc=doc, print_format=default_print_format)
             pdf_name = doc.name + '.pdf'
             pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
-            urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'               
+            urls = f'https://{frappe.local.site}/{pdf_url.file_url}'               
             try:
                 if urls and supplier_no:
                     mobile_number = supplier_no.replace("+", "")
