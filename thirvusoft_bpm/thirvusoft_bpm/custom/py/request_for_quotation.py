@@ -47,7 +47,8 @@ def send_purchase_msg(doc,event):
                 try:
                     if urls and supplier_no:
                         mobile_number = supplier_no.replace("+", "")
-                        url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                        api_url = frappe.db.get_single_value('Whatsapp Settings','url')
+                        url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                         payload={}
                         headers = {}
                         response = requests.request("GET", url, headers=headers, data=payload)
@@ -70,7 +71,8 @@ def send_purchase_msg(doc,event):
                 except Exception as e:
                     if urls and supplier_no:
                         mobile_number = supplier_no.replace("+", "")
-                        url = f'https://app.botsender.in/api/send?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                        api_url = frappe.db.get_single_value('Whatsapp Settings','url')
+                        url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
                         payload={}
                         headers = {}
                         log_doc = frappe.new_doc("Whatsapp Log")

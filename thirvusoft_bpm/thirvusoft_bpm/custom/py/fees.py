@@ -97,7 +97,7 @@ def previous_outstanding_amount(doc,event):
 
     if event == 'validate':
         if allow_outstanding:
-            doc.previous_outstanding_amount = (sum[0].get('debit') - sum[0].get('credit')) if sum else 0
+            doc.previous_outstanding_amount = ((sum[0].get('debit') or 0) - (sum[0].get('credit') or 0)) if sum else 0
         else:
             doc.previous_outstanding_amount  = 0
     doc.net_total = doc.grand_total
