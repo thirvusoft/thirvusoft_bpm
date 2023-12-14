@@ -80,7 +80,7 @@ def whatsapp_message(doc):
             pdf_bytes = frappe.get_print(doc.reference_doctype, doc.reference_name, doc=fees_doc, print_format=doc.print_format)
             pdf_name = doc.reference_name + '.pdf'
             pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
-            urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
+            urls = f'https://{frappe.local.site}{pdf_url.file_url}'
             try:
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
