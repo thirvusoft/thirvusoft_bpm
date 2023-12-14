@@ -25,7 +25,7 @@ def update_letter_head(doc,event):
 @frappe.whitelist()
 def send_message_confirmation(doc,event):
     for ref in doc.references:
-        if ref.reference_doctype == 'Fees' and ref.reference_name and frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and frappe.db.get_value('Company',doc.company,'enable_payment_confirmation_message') ==1:
+        if ref.reference_doctype == 'Fees' and ref.reference_name and frappe.db.get_value('Company',doc.company,'enable_payment_confirmation_message') ==1:
             def_v = ''
             encoded_s = ''
             html = ''
@@ -66,7 +66,7 @@ def send_message_confirmation(doc,event):
                 pdf_url = frappe.utils.file_manager.save_file(pdf_name, get_pdf(pdf_bytes), doc.doctype, doc.name)           
                 urls = f'{frappe.utils.get_url()}{pdf_url.file_url}'
                 try:
-                    if urls and i["phone_number"]:
+                    if urls and i["phone_number"] and frappe.db.get_single_value('Whatsapp Settings','enable') == 1:
                         mobile_number = i["phone_number"].replace("+", "")
                         api_url = frappe.db.get_single_value('Whatsapp Settings','url')
                         url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
@@ -90,7 +90,7 @@ def send_message_confirmation(doc,event):
                         log_doc.insert()
                         frappe.delete_doc('File',pdf_url.name)
                 except Exception as e:
-                    if urls and i["phone_number"]:
+                    if urls and i["phone_number"] and frappe.db.get_single_value('Whatsapp Settings','enable') == 1:
                         mobile_number = i["phone_number"].replace("+", "")
                         api_url = frappe.db.get_single_value('Whatsapp Settings','url')
                         url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v + encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
