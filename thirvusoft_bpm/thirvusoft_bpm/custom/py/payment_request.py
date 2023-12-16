@@ -7,30 +7,40 @@ from erpnext.accounts.doctype.payment_request.payment_request import PaymentRequ
 from frappe.core.doctype.communication.email import get_attach_link
 from frappe.utils.pdf import get_pdf
 from frappe.utils.file_manager import save_file
+from frappe.utils.background_jobs import enqueue
+
 submit = False
 
 class CustomPaymentRequest(PaymentRequest):
     def send_email(self):
-		"""send email with payment link"""
+        """send email with payment link"""
         if not self.bulk_transaction:
-            attachment = frappe.attach_print(
+            args = {
+            "recipients": self.email_to,
+            "sender": None,
+            "subject": self.subject,
+            "message": self.get_message(),
+            "now": True,
+            "attachments": [
+                frappe.attach_print(
                         self.reference_doctype,
                         self.reference_name,
                         file_name=self.reference_name,
                         print_format=self.print_format,
                     )
+                ],
+            }
         else:
-            attachment = ''
-
-		email_args = {
-			"recipients": self.email_to,
-			"sender": None,
-			"subject": self.subject,
-			"message": self.get_message(),
-			"now": True,
-			"attachments": [attachment],
-		}
-		enqueue(method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args)
+            args = {
+            "recipients": self.email_to,
+            "sender": None,
+            "subject": self.subject,
+            "message": self.get_message(),
+            "now": True
+            }
+            
+        email_args = args
+        enqueue(method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args)
 
 
 def get_advance_entries(doc,event):
