@@ -9,6 +9,30 @@ from frappe.utils.pdf import get_pdf
 from frappe.utils.file_manager import save_file
 submit = False
 
+class CustomPaymentRequest(PaymentRequest):
+    def send_email(self):
+		"""send email with payment link"""
+        if not self.bulk_transaction:
+            attachment = frappe.attach_print(
+                        self.reference_doctype,
+                        self.reference_name,
+                        file_name=self.reference_name,
+                        print_format=self.print_format,
+                    )
+        else:
+            attachment = ''
+
+		email_args = {
+			"recipients": self.email_to,
+			"sender": None,
+			"subject": self.subject,
+			"message": self.get_message(),
+			"now": True,
+			"attachments": [attachment],
+		}
+		enqueue(method=frappe.sendmail, queue="short", timeout=300, is_async=True, **email_args)
+
+
 def get_advance_entries(doc,event):
     # if doc.party_type == "Student" and doc.party and frappe.db.get_value('Student',doc.party,'virtual_account'):
     #     doc.virtual_account  = frappe.db.get_value('Student',doc.party,'virtual_account')
@@ -54,7 +78,7 @@ def background_submit(doc,event):
 
 
 def whatsapp_message(doc):
-    if not doc.bulk_transaction and frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and doc.reference_doctype == 'Fees' and doc.reference_name:
+    if frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and doc.reference_doctype == 'Fees' and doc.reference_name:
         html = PaymentRequest.get_message(doc)
         v=(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html ).split("<br>")).split(' ') ))
         v = v.replace('click here to pay', f'click here to pay: {doc.payment_url}')
@@ -85,7 +109,10 @@ def whatsapp_message(doc):
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
                     api_url = frappe.db.get_single_value('Whatsapp Settings','url')
-                    url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                    if not doc.bulk_transaction:
+                        url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                    else:
+                        url = f'{api_url}send.php?number=91{mobile_number}&type=text&message={def_v+encoded_s}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     response = requests.request("GET", url, headers=headers, data=payload)
@@ -109,7 +136,10 @@ def whatsapp_message(doc):
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
                     api_url = frappe.db.get_single_value('Whatsapp Settings','url')
-                    url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                    if not doc.bulk_transaction:
+                        url = f'{api_url}send.php?number=91{mobile_number}&type=media&message={def_v+encoded_s}&media_url={urls}&filename={pdf_name}&instance_id={instance_id}&access_token={access_token}'
+                    else:
+                        url = f'{api_url}send.php?number=91{mobile_number}&type=text&message={def_v+encoded_s}&instance_id={instance_id}&access_token={access_token}'
                     payload={}
                     headers = {}
                     log_doc = frappe.new_doc("Whatsapp Log")
