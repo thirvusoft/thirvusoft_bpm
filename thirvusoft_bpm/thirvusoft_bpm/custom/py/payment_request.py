@@ -54,7 +54,7 @@ def background_submit(doc,event):
 
 
 def whatsapp_message(doc):
-    if frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and doc.reference_doctype == 'Fees' and doc.reference_name:
+    if not doc.bulk_transaction and frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and doc.reference_doctype == 'Fees' and doc.reference_name:
         html = PaymentRequest.get_message(doc)
         v=(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html ).split("<br>")).split(' ') ))
         v = v.replace('click here to pay', f'click here to pay: {doc.payment_url}')
