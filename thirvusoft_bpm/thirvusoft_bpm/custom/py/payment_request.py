@@ -12,6 +12,18 @@ from frappe.utils.background_jobs import enqueue
 submit = False
 
 class CustomPaymentRequest(PaymentRequest):
+    def get_message(self):
+        """return message with payment gateway link"""
+
+        context = {
+            "doc": frappe.get_doc(self.reference_doctype, self.reference_name),
+            "payment_url": self.payment_url,
+            'student_balance':self.student_balance
+        }
+
+        if self.message:
+            return frappe.render_template(self.message, context)
+
     def send_email(self):
         """send email with payment link"""
         if not self.bulk_transaction:
