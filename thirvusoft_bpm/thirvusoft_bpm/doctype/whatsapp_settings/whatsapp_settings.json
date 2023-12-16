@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "enable",
+  "url",
   "instance_id",
   "access_token",
   "section_break_hubko",
@@ -96,12 +97,19 @@
    "fieldname": "enable_message_for_payment_entry",
    "fieldtype": "Check",
    "label": "Enable Message for Payment Entry"
+  },
+  {
+   "depends_on": "eval:doc.enable",
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "URl",
+   "mandatory_depends_on": "eval:doc.enable"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-07-11 13:44:59.802325",
+ "modified": "2023-11-28 15:52:05.238983",
  "modified_by": "Administrator",
  "module": "Thirvusoft Bpm",
  "name": "Whatsapp Settings",

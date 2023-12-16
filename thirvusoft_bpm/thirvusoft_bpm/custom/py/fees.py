@@ -95,11 +95,11 @@ def previous_outstanding_amount(doc,event):
     ''',as_dict=1)
 
 
-
-    if allow_outstanding:
-        doc.previous_outstanding_amount = ((sum[0].get('debit') or 0) - (sum[0].get('credit') or 0)) if sum else 0
-    else:
-        doc.previous_outstanding_amount  = 0
+    if event == 'validate':
+        if allow_outstanding:
+            doc.previous_outstanding_amount = ((sum[0].get('debit') or 0) - (sum[0].get('credit') or 0)) if sum else 0
+        else:
+            doc.previous_outstanding_amount  = 0
     doc.net_total = doc.grand_total
     if frappe.db.get_value('Company',doc.company,'enable_annual_discounting'):
         if doc.receivable_account == frappe.db.get_value('Company',doc.company,'receivable_account_head_') and  doc.income_account == frappe.db.get_value('Company',doc.company,'income_account_head'):
