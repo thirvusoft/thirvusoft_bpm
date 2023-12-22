@@ -77,6 +77,7 @@ def create_payment_request(list_of_docs=None,filters=None):
 				)
 				doc.bulk_transaction = 1
 				doc.grand_total =  fees.get('net')
+				doc.student_balance = fees.get('net')
 				doc.save()
 
 				frappe.db.set_value('Bulk Transaction Log Table',{'parent':update_dict[fees.get('name')],'parentfield': "bulk_transaction_log_table",'fees':fees.get('name')},'status','Completed')
