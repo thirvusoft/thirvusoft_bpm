@@ -73,7 +73,6 @@ def send_message_confirmation(doc,event):
                         payload={}
                         headers = {}
                         response = requests.request("GET", url, headers=headers, data=payload)
-                        frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
                         log_doc = frappe.new_doc("Whatsapp Log")
                         log_doc.update({
                             "mobile_no": mobile_number,
@@ -88,7 +87,7 @@ def send_message_confirmation(doc,event):
                         log_doc.reference_doctype = "Payment Entry"
                         log_doc.reference_name = doc.name
                         log_doc.insert()
-                        frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
+                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
                 except Exception as e:
                     if urls and i["phone_number"] and frappe.db.get_single_value('Whatsapp Settings','enable') == 1:
                         mobile_number = i["phone_number"].replace("+", "")
@@ -110,7 +109,7 @@ def send_message_confirmation(doc,event):
                         log_doc.reference_doctype = "Payment Entry"
                         log_doc.reference_name = doc.name
                         log_doc.insert()
-                        frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
+                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
 
             final_msg = def_v + encoded_s
             final_msg.replace('%',' ')
@@ -176,7 +175,7 @@ def send_purchase_msg(doc):
                     payload={}
                     headers = {}
                     response = requests.request("GET", url, headers=headers, data=payload)
-                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
+                    
                     log_doc = frappe.new_doc("Whatsapp Log")
                     log_doc.update({
                         "mobile_no": mobile_number,
@@ -191,7 +190,7 @@ def send_purchase_msg(doc):
                     log_doc.reference_doctype = "Payment Entry"
                     log_doc.reference_name = doc.name
                     log_doc.insert()
-                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
+                frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
             except Exception as e:
                 if urls and supplier_no:
                     mobile_number = supplier_no.replace("+", "")
@@ -213,4 +212,4 @@ def send_purchase_msg(doc):
                     log_doc.reference_doctype = "Payment Entry"
                     log_doc.reference_name = doc.name
                     log_doc.insert()
-                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
+                frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
