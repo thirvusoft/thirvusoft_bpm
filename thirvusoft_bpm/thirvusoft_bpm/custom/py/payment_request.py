@@ -117,7 +117,7 @@ def whatsapp_message(doc):
                     headers = {}
                     response = requests.request("GET", url, headers=headers, data=payload)
                     #frappe.printerr(response.__dict__)
-                    frappe.delete_doc('File',pdf_url.name)
+                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
                     log_doc = frappe.new_doc("Whatsapp Log")
                     log_doc.update({
                         "mobile_no": mobile_number,
@@ -131,7 +131,7 @@ def whatsapp_message(doc):
                     log_doc.reference_doctype = "Payment Request"
                     log_doc.reference_name = doc.name
                     log_doc.insert()
-                    frappe.delete_doc('File',pdf_url.name)
+                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
             except Exception as e:
                 if urls and i["phone_number"]:
                     mobile_number = i["phone_number"].replace("+", "")
@@ -156,4 +156,4 @@ def whatsapp_message(doc):
                     log_doc.reference_doctype = "Payment Request"
                     log_doc.reference_name = doc.name
                     log_doc.insert()
-                    frappe.delete_doc('File',pdf_url.name)
+                    frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)

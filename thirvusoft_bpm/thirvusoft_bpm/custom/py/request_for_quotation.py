@@ -52,7 +52,7 @@ def send_purchase_msg(doc,event):
                         payload={}
                         headers = {}
                         response = requests.request("GET", url, headers=headers, data=payload)
-                        frappe.delete_doc('File',pdf_url.name)
+                        frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
                         log_doc = frappe.new_doc("Whatsapp Log")
                         log_doc.update({
                             "mobile_no": mobile_number,
@@ -67,7 +67,7 @@ def send_purchase_msg(doc,event):
                         log_doc.reference_doctype = doc.doctype
                         log_doc.reference_name = doc.name
                         log_doc.insert()
-                        frappe.delete_doc('File',pdf_url.name)
+                        frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
                 except Exception as e:
                     if urls and supplier_no:
                         mobile_number = supplier_no.replace("+", "")
@@ -89,5 +89,5 @@ def send_purchase_msg(doc,event):
                         log_doc.reference_doctype = doc.doctype
                         log_doc.reference_name = doc.name
                         log_doc.insert()
-                        frappe.delete_doc('File',pdf_url.name)
+                        frappe.delete_doc('File',pdf_url.name,ignore_permissions=True)
 
