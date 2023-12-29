@@ -114,9 +114,11 @@ def send_message_confirmation(doc,event):
             final_msg = def_v + encoded_s
             final_msg.replace('%',' ')
             """send email with payment link"""
+            default_mail=frappe.db.get_value("Company", {"name":doc.company}, "default_email")
             email_args = {
                 "recipients": fees_doc.student_email,
                 "sender": None,
+                "cc": default_mail or None,
                 "subject": f'Payment Entry for {doc.name}',
                 "message": html2 + html,
                 "now": True,
