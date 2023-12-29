@@ -262,7 +262,7 @@ def get_data(filters):
 							
 								gl.voucher_no
 								
-       '''.format(company,start_date,end_date,conditions, conditions.replace('gl.', 'gl_gc.'), conditions.replace('gl.', 'gl_vchr.')),as_dict= True, debug=1)
+       '''.format(company,start_date,end_date,conditions, conditions.replace('gl.', 'gl_gc.'), conditions.replace('gl.', 'gl_vchr.')),as_dict= True)
 	# sample_data=[]
 	# a=[]
 	# a_debit, a_credit=[],[]
