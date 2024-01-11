@@ -14,13 +14,19 @@ submit = False
 class CustomPaymentRequest(PaymentRequest):
     def get_message(self):
         """return message with payment gateway link"""
-
-        context = {
-            "doc": frappe.get_doc(self.reference_doctype, self.reference_name),
-            "payment_url": self.payment_url,
-            'student_balance':self.student_balance
-        }
-
+        if self.party_type == 'Student':
+            context = {
+                "doc": frappe.get_doc(self.reference_doctype, self.reference_name),
+                "payment_url": self.payment_url,
+                'student_balance':self.student_balance,
+                'virtual_account':frappe.get_value('Student',self.party,'virtual_account') or "--"
+            }
+        else:
+            context = {
+                "doc": frappe.get_doc(self.reference_doctype, self.reference_name),
+                "payment_url": self.payment_url,
+                'student_balance':self.student_balance,
+            }
         if self.message:
             return frappe.render_template(self.message, context)
 
@@ -51,6 +57,7 @@ class CustomPaymentRequest(PaymentRequest):
             args = {
             "recipients": self.email_to,
             "sender": None,
+            "bcc": default_mail or None,
             "subject": self.subject,
             "message": self.get_message(),
             "now": True
@@ -106,7 +113,7 @@ def background_submit(doc,event):
 
 def whatsapp_message(doc):
     if frappe.db.get_single_value('Whatsapp Settings','enable') == 1 and doc.reference_doctype == 'Fees' and doc.reference_name:
-        html = PaymentRequest.get_message(doc)
+        html = CustomPaymentRequest.get_message(doc)
         v=(" ".join("".join(re.sub("\<[^>]*\>", "<br>",html ).split("<br>")).split(' ') ))
         v = v.replace('click here to pay', f'click here to pay: {doc.payment_url}')
         encoded_s = quote(v)
