@@ -26,7 +26,10 @@ class CustomPaymentRequest(PaymentRequest):
 
     def send_email(self):
         """send email with payment link"""
-        default_mail = frappe.db.get_value("Email Account", {"default_outgoing":1}, "default_mail")
+        if self.reference_doctype == "Fees" and self.reference_name:
+            fees = frappe.db.get_value("Fees", {"name":self.reference_name}, "company")
+            if fees:
+                default_mail=frappe.db.get_value("Company", {"name":fees}, "default_email")
         if not self.bulk_transaction:
             args = {
             "recipients": self.email_to,
