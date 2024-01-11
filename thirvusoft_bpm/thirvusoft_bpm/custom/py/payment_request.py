@@ -34,7 +34,7 @@ class CustomPaymentRequest(PaymentRequest):
             args = {
             "recipients": self.email_to,
             "sender": None,
-            "cc": default_mail or None,
+            "bcc": default_mail or None,
             "subject": self.subject,
             "message": self.get_message(),
             "now": True,

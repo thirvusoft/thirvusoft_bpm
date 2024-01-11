@@ -118,7 +118,7 @@ def send_message_confirmation(doc,event):
             email_args = {
                 "recipients": fees_doc.student_email,
                 "sender": None,
-                "cc": default_mail or None,
+                "bcc": default_mail or None,
                 "subject": f'Payment Entry for {doc.name}',
                 "message": html2 + html,
                 "now": True,
