@@ -39,7 +39,7 @@ def create_payment_request(list_of_docs=None,filters=None):
 		new_transaction = frappe.new_doc('Bulk Transaction Log')
 		idx  = 0
 		for fees in list_of_docs:
-			fees_doc = frappe.get_list("Fees",{'student':fees.get('student'),'outstanding_amount':['>',0]},order_by='creation')
+			fees_doc = frappe.get_list("Fees",{'student':fees.get('student'),'docstatus':1,'outstanding_amount':['>',0]},order_by='creation')
 			if fees_doc:
 				fees_doc = fees_doc[0]
 				fees.update({'name': fees_doc.get('name')})
