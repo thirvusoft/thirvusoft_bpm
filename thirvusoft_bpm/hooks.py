@@ -35,9 +35,11 @@ doctype_js = {
 				"Fees" : "thirvusoft_bpm/custom/js/fees.js",
 				"Company" : "thirvusoft_bpm/custom/js/company.js",
 				"Guardian":"thirvusoft_bpm/custom/js/guardian.js",
-				"Payment Entry":"thirvusoft_bpm/custom/js/payment_entry.js"
+				"Payment Entry":"thirvusoft_bpm/custom/js/payment_entry.js",
+                "Journal Entry":"thirvusoft_bpm/custom/js/journal_entry.js"
 			}
-doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/fees_list.js"}
+doctype_list_js = {"Fees" : "thirvusoft_bpm/custom/js/fees_list.js",
+                   "Student":"thirvusoft_bpm/custom/js/student_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
